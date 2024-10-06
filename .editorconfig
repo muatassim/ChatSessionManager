@@ -1,0 +1,24 @@
+﻿# C# files
+[*.cs] 
+# Suppress CA2254 for the entire solution
+dotnet_diagnostic.CA2254.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1859.severity = none
+dotnet_diagnostic.IDE0051.severity = none
+
+ 
+
+ 
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
+
+# IDE0010: Add missing cases
+dotnet_diagnostic.IDE0010.severity = none
+
+# IDE0072: Add missing cases
+dotnet_diagnostic.IDE0072.severity = none
+
+# IDE0059: Add missing cases
+dotnet_diagnostic.IDE0059.severity = none
+# IDE0290: Add missing cases
+dotnet_diagnostic.IDE0290.severity = none
