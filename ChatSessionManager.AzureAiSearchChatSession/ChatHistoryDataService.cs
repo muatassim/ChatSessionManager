@@ -2,6 +2,7 @@
 using ChatSessionManager.AzureAiSearchChatSession.Interfaces;
 using ChatSessionManager.AzureAiSearchChatSession.Models;
 using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
+using System.Linq.Expressions;
 
 namespace ChatSessionManager.AzureAiSearchChatSession
 {
@@ -12,7 +13,10 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         {
              Logger = logger;
         }
-
+        /// <summary>
+        /// Print to Log
+        /// </summary>
+        /// <param name="messages"></param>
         protected void PrintLogMessages(List<LogMessage> messages)
         {
             if (messages == null || messages.Count == 0) return;
@@ -32,6 +36,24 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 }
             }
         }
+
+        /// <summary>
+        /// Get 
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public abstract Task<ChatDocument> FindAsync(Expression<Func<ChatDocument, bool>> predicate);
+
+
+        /// <summary>
+        /// Find All 
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public abstract Task<List<ChatDocument>> FindAllAsync(Expression<Func<ChatDocument, bool>> predicate);
+
+
+
         /// <summary>
         /// Create DataSource 
         /// </summary>
@@ -55,27 +77,43 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         public abstract Task<(List<LogMessage> messages, bool success)> AddDocumentAsync(ChatDocument chatDocument);
 
         /// <summary>
-        /// Get Documents 
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public abstract Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query);
-
-        /// <summary>
-        /// Get documents 
+        /// Get Document 
         /// </summary>
         /// <param name="query"></param>
         /// <param name="queryEmbeddings"></param>
         /// <param name="size"></param>
+        /// <param name="userId"></param>
+        /// <param name="rerankerScoreThreshold"></param>
         /// <returns></returns>
-        public abstract Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size);
 
+        public abstract Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5);
+
+       
         /// <summary>
         /// Get 
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         public abstract Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId);
+
+        /// <summary>
+        /// Get
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+
+        public abstract Task<HistoryContext> GetChatHistoryContextAsync(Expression<Func<ChatDocument, bool>> predicate);
+
+        /// <summary>
+        /// Get 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="queryEmbeddings"></param>
+        /// <param name="size"></param>
+        /// <param name="rerankerScoreThreshold"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public abstract Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold);
     }
 
 
