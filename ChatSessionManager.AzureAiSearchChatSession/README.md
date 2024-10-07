@@ -1,4 +1,4 @@
-# ChatSessionManager 
+# ChatSessionManager  
 
 ## Overview
 **ChatHistoryManager** is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.
