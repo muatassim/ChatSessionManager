@@ -14,8 +14,8 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
     public class AzureAiSearchChatHistoryDataServiceTest 
     {
         static readonly bool skipDataSourceDeletionTest = true;
-        static string userId = "B85A4454-A007-449C-B1DA-0136BFE6248B";
-        static string sessionId = Guid.NewGuid().ToString();
+        static readonly string userId = "B85A4454-A007-449C-B1DA-0136BFE6248B";
+        static readonly string sessionId = Guid.NewGuid().ToString();
         [TestMethod]
         public void AzureAiSearchChatHistoryDataServiceTestIsNotNull()
         {
@@ -46,6 +46,26 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
             Assert.IsNotNull(messages);
             Assert.IsTrue(success);
         }
+        [TestMethod]
+        [DataRow("What is the capital of Pakistan")]
+        public async Task GetRelatedRecordsTestAsync(string question)
+        {
+            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
+            Assert.IsNotNull(chatHistoryDataService);
+            Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
+
+            Assert.IsNotNull(kernel);
+            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+            Assert.IsNotNull(textEmbeddingGenerationService);
+            //Get Question 1 Vector 
+            ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+            Assert.IsNotNull(questionEmbedding);
+            List<ChatDocument> historyRecords = await chatHistoryDataService.GetDocumentsByQueryAsync(question, questionEmbedding, 2);
+            Assert.IsNotNull(historyRecords);
+
+
+
+        }
 
 
         [TestMethod]
@@ -66,12 +86,7 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
             Assert.IsNotNull(kernel);
 
             IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
-            Assert.IsNotNull(chatCompletionService);
-
-
-
-
-
+            Assert.IsNotNull(chatCompletionService); 
             ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
             Assert.IsNotNull(textEmbeddingGenerationService);
             //Get Question 1 Vector 
@@ -125,16 +140,18 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
 
         private static async Task SaveChat(string question1, IChatHistoryDataService chatHistoryDataService, ReadOnlyMemory<float> questionEmbedding, ChatHistory chatHistory, ChatMessageContent messageContent)
         {
-            ChatDocument chatDocument = new ChatDocument();
-            chatDocument.Id = Guid.NewGuid().ToString();
-            chatDocument.UserId = userId;
-            chatDocument.Content = messageContent.Content;
-            chatDocument.IpAddress = "127.0.0.1";
-            chatDocument.SessionId = sessionId;
-            chatDocument.Timestamp = DateTime.UtcNow;
-            chatDocument.QuestionVector = questionEmbedding;
-            chatDocument.Question = question1;
-            chatDocument.Role = AuthorRole.User.Label;
+            ChatDocument chatDocument = new()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserId = userId,
+                Content = messageContent.Content,
+                IpAddress = "127.0.0.1",
+                SessionId = sessionId,
+                Timestamp = DateTime.UtcNow,
+                QuestionVector = questionEmbedding,
+                Question = question1,
+                Role = AuthorRole.User.Label
+            };
             chatHistory.Add(messageContent);
             //Save the conversation to the UserStore 
             (List<LogMessage> messages, bool success) response = await chatHistoryDataService.AddDocumentAsync(chatDocument);
