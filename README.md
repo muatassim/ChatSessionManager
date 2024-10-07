@@ -26,21 +26,4 @@
     dotnet restore
     ```
 
-## Usage
-### Adding a Chat Session
-```csharp
-using ChatSessionManager;
-
-var chatSession = new ChatSession
-{
-    SessionId = Guid.NewGuid(),
-    UserId = "user123",
-    Messages = new List<Message>
-    {
-        new Message { Sender = "User", Content = "Hello, AI!" },
-        new Message { Sender = "AI", Content = "Hello, human!" }
-    },
-    Timestamp = DateTime.UtcNow
-};
-
-ChatSessionManager.AddSession(chatSession);
+ 
