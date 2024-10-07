@@ -33,9 +33,6 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Azure.Search.Documents" Version="11.6.0" />
 	</ItemGroup>
-	<ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
 
 	<ItemGroup>
 		<None Include="README.md">
@@ -48,5 +45,9 @@
 			<PackagePath></PackagePath>
 			<Visible>True</Visible>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Helpers\" />
 	</ItemGroup>
 </Project>
