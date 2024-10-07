@@ -13,12 +13,12 @@ using Humanizer;
 
 namespace ChatSessionManager.AzureAiSearchChatSession
 {
-    public class AzureAiSearchChatHistoryDataService : ChatHistoryDataService
+    public class AzureAISearchChatHistoryDataService : ChatHistoryDataService
     {
         readonly AzureAiSearch _settings;
-        private readonly ILogger<AzureAiSearchChatHistoryDataService> _logger;
-        public AzureAiSearchChatHistoryDataService(
-            IOptions<ChatSessionManagerOptions> options, ILogger<AzureAiSearchChatHistoryDataService> logger) : base(
+        private readonly ILogger<AzureAISearchChatHistoryDataService> _logger;
+        public AzureAISearchChatHistoryDataService(
+            IOptions<ChatSessionManagerOptions> options, ILogger<AzureAISearchChatHistoryDataService> logger) : base(
                 logger)
         {
             _settings = options.Value.AzureAiSearch;
@@ -65,6 +65,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 success = true;
                 messages.Add(new LogMessage($"{nameof(ChatDocument)} Index Successfully Deleted! ", MessageType.Info));
             }
+            PrintLogMessages(messages);
             return (messages, success);
         }
         /// <summary>
@@ -99,6 +100,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 _logger.LogError(ex.Message);
                 messages.Add(new LogMessage(ex.Message, MessageType.Error));
             }
+            PrintLogMessages(messages);
             return (messages, success);
 
         }
@@ -131,7 +133,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             {
                 _logger.LogError(ex.Message);
             }
-
+            PrintLogMessages(messages);
             return indexExists;
         }
 
@@ -155,9 +157,13 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 {
                         { nameof(ChatDocument.Id).Camelize(), chatDocument.Id },
                         { nameof(ChatDocument.UserId).Camelize(), chatDocument.UserId },
-                        { nameof(ChatDocument.Message).Camelize(), chatDocument.Message },
+                        { nameof(ChatDocument.Content).Camelize(), chatDocument.Content },
+                        { nameof(ChatDocument.IpAddress).Camelize(), chatDocument.IpAddress },
+                        { nameof(ChatDocument.SessionId).Camelize(), chatDocument.SessionId },
+                        { nameof(ChatDocument.Timestamp).Camelize(), chatDocument.Timestamp },
+                        { nameof(ChatDocument.Role).Camelize(), chatDocument.Role },
+                        { nameof(ChatDocument.Question).Camelize(), chatDocument.Question },
                         { nameof(ChatDocument.QuestionVector).Camelize(), chatDocument.QuestionVector.ToArray() },
-                        { nameof(ChatDocument.CreatedAt).Camelize(), chatDocument.CreatedAt }
                 };
                 batch.Actions.Add(new IndexDocumentsAction<SearchDocument>(IndexActionType.MergeOrUpload, searchDocument));
                 IndexDocumentsResult result = await searchClient.IndexDocumentsAsync(batch);
@@ -178,6 +184,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             {
                 messages.Add(new LogMessage($"Error creating {nameof(ChatDocument)} Embedding: " + ex.Message, MessageType.Error));
             }
+            PrintLogMessages(messages);
             //Create Index Document  
             return await Task.FromResult((messages, success));
         }
@@ -227,7 +234,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             return null;
         }
         /// <summary>
-        /// Get Chat Documents by Query Does the Text Search on Message Field
+        /// Get Chat Documents by Query Does the Text Search on Content Field
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -239,7 +246,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             SearchClient searchClient = _searchIndexClient.GetSearchClient(_settings.IndexName);
             SearchOptions options = new()
             {
-                Filter = $"search.ismatch('{query}', '{nameof(ChatDocument.Message).Camelize()}')",
+                Filter = $"search.ismatch('{query}', '{nameof(ChatDocument.Content).Camelize()}')",
                 SearchMode = SearchMode.All,
                 QueryType = SearchQueryType.Full
             };
@@ -359,10 +366,13 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                     [
                            new SimpleField(nameof(ChatDocument.Id).Camelize(), SearchFieldDataType.String) { IsKey = true },
                            new SimpleField(nameof(ChatDocument.UserId).Camelize(), SearchFieldDataType.String) { IsFilterable = true, IsSortable = true },
+                           new SearchableField(nameof(ChatDocument.Content).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true }, 
+                           new SearchableField(nameof(ChatDocument.IpAddress).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true },
+                           new SearchableField(nameof(ChatDocument.SessionId).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true },
+                           new SimpleField(nameof(ChatDocument.Timestamp).Camelize(), SearchFieldDataType.DateTimeOffset){ IsFilterable = true },
+                           new SearchableField(nameof(ChatDocument.Role).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true },
                            new SearchableField(nameof(ChatDocument.Question).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true },
-                           new SearchableField(nameof(ChatDocument.Message).Camelize()) { IsFilterable = true, IsSortable = true, IsFacetable = true },
                            new VectorSearchField(nameof(ChatDocument.QuestionVector).Camelize(), _settings.ModelDimension, _settings.VectorSearchProfile),
-                           new SimpleField(nameof(ChatDocument.CreatedAt).Camelize(), SearchFieldDataType.DateTimeOffset){ IsFilterable = true }
                     ],
                     VectorSearch = new()
                     {
@@ -379,7 +389,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                                ContentFields =
                                   {
                                    new SemanticField(nameof(ChatDocument.Question).Camelize()),
-                                    new SemanticField(nameof(ChatDocument.Message).Camelize())
+                                    new SemanticField(nameof(ChatDocument.Content).Camelize())
                                   } ,
                                   KeywordsFields=
                                   {
@@ -389,7 +399,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                            })
                         },
                     },
-                    Suggesters = { new SearchSuggester(nameof(ChatDocument.Question).Camelize(), [nameof(ChatDocument.Message).Camelize()]) }
+                    Suggesters = { new SearchSuggester(nameof(ChatDocument.Question).Camelize(), [nameof(ChatDocument.Content).Camelize()]) }
                 };
                 Response<SearchIndex> response = await _searchIndexClient.CreateOrUpdateIndexAsync(index);
                 if (response.GetRawResponse().Status == (int)HttpStatusCode.Created || response.GetRawResponse().Status == (int)HttpStatusCode.OK)

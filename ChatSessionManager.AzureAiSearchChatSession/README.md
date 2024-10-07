@@ -25,22 +25,33 @@
     ```sh
     dotnet restore
     ```
+4. **Add to Dependency Injection: **
+    ```csharp
+     services.AddAzureAISearchChatHistory(context.Configuration);
+    ```
 
-## Usage
-### Adding a Chat Session
-```csharp
-using ChatSessionManager;
 
-var chatSession = new ChatSession
+### Configuration
+
+Add the following settings to your `appsettings.json` file:
+
+```json
 {
-    SessionId = Guid.NewGuid(),
-    UserId = "user123",
-    Messages = new List<Message>
-    {
-        new Message { Sender = "User", Content = "Hello, AI!" },
-        new Message { Sender = "AI", Content = "Hello, human!" }
-    },
-    Timestamp = DateTime.UtcNow
-};
+  "ChatSessionManagerOptions": {
+    "AzureAiSearch": {
+      "ServiceName": "--Azure Ai Service Name--",
+      "ApiKey": "--API KEY--",
+      "SemanticSearchConfigName": "my-semantic-config",
+      "VectorSearchHNSWConfig": "my-hnsw-vector-config",
+      "VectorSearchProfile": "my-vector-profile",
+      "ModelDimension": "1536",
+      "IndexName": "INDEX NAME"
+    }
+  }
+}
+```
 
-ChatSessionManager.AddSession(chatSession);
+### Usage 
+To integrate the `AzureAISearchChatHistoryDataService` implementation of the `IChatHistoryDataService` interface, follow these steps:
+
+
