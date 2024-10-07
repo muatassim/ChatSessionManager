@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Description> Update NUGET Packages </Description>
+	  <Description> ChatHistoryManager is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.</Description>
 	  <Version>1.0.0</Version>
 	  <PackageReleaseNotes> Updated nuget packages  </PackageReleaseNotes> 
 	  <Authors>Muatassim Aziz</Authors>
