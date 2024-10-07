@@ -39,7 +39,7 @@ Add the following settings to your `appsettings.json` file:
 {
   "ChatSessionManagerOptions": {
     "AzureAiSearch": {
-      "ServiceName": "--Azure Ai Service Name--",
+      "ServiceName": "--Azure Ai Service Name--",  
       "ApiKey": "--API KEY--",
       "SemanticSearchConfigName": "my-semantic-config",
       "VectorSearchHNSWConfig": "my-hnsw-vector-config",
