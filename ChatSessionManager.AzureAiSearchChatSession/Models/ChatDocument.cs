@@ -1,47 +1,60 @@
-﻿namespace ChatSessionManager.AzureAiSearchChatSession.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ChatSessionManager.AzureAiSearchChatSession.Models
 {
 
     
     public class ChatDocument
     {
+        [JsonPropertyName("id")]
         /// <summary>
         /// Id of the document
         /// </summary>
         public string Id { get; set; }
 
+
+        [JsonPropertyName("userId")]
         /// <summary>
         /// User Id
         /// </summary>
         public string UserId { get; set; }
 
-
+        [JsonPropertyName("content")]
         /// <summary>
         /// Content
         /// </summary>
 
         public string Content { get; set; }
 
-
+        [JsonPropertyName("ipAddress")]
         /// <summary>
         /// IpAddress 
         /// </summary>
         public string IpAddress { get; set; }
 
+
+        [JsonPropertyName("sessionId")]
         /// <summary>
         /// GEt 
         /// </summary>
         public string SessionId { get; set; }
 
+
+        [JsonPropertyName("timestamp")]
         /// <summary>
         /// Created At
         /// </summary>
 
         public DateTime Timestamp { get; set; }
+
+        [JsonPropertyName("role")]
         /// <summary>
         /// Role of the message 
         /// </summary>
         public string Role { get; set; }
 
+
+        [JsonPropertyName("questionVector")]
 
         /// <summary>
         /// Question Vector
@@ -49,6 +62,8 @@
 
         public ReadOnlyMemory<float> QuestionVector { get; set; }
 
+
+        [JsonPropertyName("question")]
         /// <summary>
         /// Question 
         /// </summary>
