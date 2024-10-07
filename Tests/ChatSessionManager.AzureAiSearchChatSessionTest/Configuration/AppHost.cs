@@ -1,34 +1,41 @@
-﻿using ChatSessionManager.AzureAiSearchChatSession; 
+﻿using ChatSessionManager.AzureAiSearchChatSession;
 using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel; 
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-
 namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
 {
     public class AppHost
     {
+        public static IConfiguration Configuration => GetServiceProvider().GetService<IConfiguration>();
         private static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((context, config) => {
-                   var appAssembly = typeof(AppHost).Assembly;
-                     config.AddUserSecrets(appAssembly, optional: true);
-                   // config.AddUserSecrets<Program>();
-                 })
-                .ConfigureServices((context, services) =>
+            Host.CreateDefaultBuilder(args) 
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                var appAssembly = typeof(AppHost).Assembly;
+                config.AddUserSecrets(appAssembly, optional: true);
+                // config.AddUserSecrets<Program>();
+            })
+            .ConfigureServices((context, services) =>
                 {
-                  
+                    services.AddLogging(logging =>
+                    { 
+                        logging.AddConsole();
+                        logging.AddDebug(); 
+                        logging.AddFile("Logs/log.txt", LogLevel.Information);
+
+                    });
                     services.AddOptions();
                     services.Configure<AzureOpenAIOptions>(options => context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Bind(options));
                     services.AddScoped<AzureOpenAIOptions>();
 
-                   // AzureOpenAIOptions azureOpenAIOptions =
-                   //    context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Get<AzureOpenAIOptions>();
+                    AzureOpenAIOptions azureOpenAIOptions =
+                       context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Get<AzureOpenAIOptions>();
 
-                    var azureOpenAIOptions = new AzureOpenAIOptions();
-                    context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Bind(azureOpenAIOptions);
+                    // var azureOpenAIOptions = new AzureOpenAIOptions();
+                    //  context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Bind(azureOpenAIOptions);
 
                     services.AddAzureOpenAIChatCompletion(
                              deploymentName: azureOpenAIOptions.ModelName,
@@ -39,26 +46,11 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
                         deploymentName: azureOpenAIOptions.EmbeddingModel,
                             endpoint: azureOpenAIOptions.Endpoint,
                              apiKey: azureOpenAIOptions.Key);
-
-                    // Register IChatCompletionService as a singleton
-                    //services.AddSingleton<IChatCompletionService>(provider =>
-                    //     new AzureOpenAIChatCompletionService(
-                    //         deploymentName: azureOpenAIOptions.ModelName,
-                    //         endpoint: azureOpenAIOptions.Endpoint,
-                    //          apiKey: azureOpenAIOptions.Key));
-
-                    //services.AddSingleton<ITextEmbeddingGenerationService>(provider =>
-                    //    new AzureOpenAITextEmbeddingGenerationService(
-                    //        deploymentName: azureOpenAIOptions.EmbeddingModel,
-                    //        endpoint: azureOpenAIOptions.Endpoint,
-                    //         apiKey: azureOpenAIOptions.Key));
-
                     services.AddTransient((serviceProvider) =>
                     {
                         return new Kernel(serviceProvider);
                     });
-                    // services.Add<ApplicationService>(); 
-                    services.AddAzureAiSearchChatHistory(context.Configuration);
+                    services.AddAzureAISearchChatHistory(context.Configuration);
                 });
         private static IHost _host;
 
@@ -75,17 +67,29 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
             _host ??= CreateHostBuilder([]).Build();
             return _host?.Services ?? CreateHostBuilder([]).Build().Services;
         }
-    }
 
 
-    public class KernelHelper
-    {
-        public void Get()
+        public static string LogPath => Path.Combine(Environment.CurrentDirectory, "Logs");
+        public static bool OpenLogFolder
         {
-            Kernel kernel = new(AppHost.GetServiceProvider());
-            IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
-
-            kernelBuilder.Build();
+            get
+            {
+                try
+                {
+                    if (bool.TryParse(Configuration.GetSection("OpenLogFolder").Get<string>(), out bool open))
+                    {
+                        return open;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+                return false;
+            }
         }
     }
+
+
+
 }

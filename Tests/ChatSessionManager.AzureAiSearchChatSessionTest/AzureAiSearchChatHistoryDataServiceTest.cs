@@ -7,8 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Embeddings;
-using System.Net.Http;
-
+using Serilog;
 namespace ChatSessionManager.AzureAiSearchChatSessionTest
 {
     [TestClass]
@@ -18,14 +17,14 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         [TestMethod]
         public void AzureAiSearchChatHistoryDataServiceTestIsNotNull()
         {
-            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAiSearchChatHistoryDataService));
+            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
             Assert.IsNotNull(chatHistoryDataService); 
         }
 
         [TestMethod]
         public async Task CreateDataSourceIfNotExistAsyncTest()
         {
-            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAiSearchChatHistoryDataService));
+            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
             Assert.IsNotNull(chatHistoryDataService);
             (List<AzureAiSearchChatSession.Models.LogMessage> messages, bool success) =
                 await chatHistoryDataService.CreateDataSourceIfNotExistAsync(); 
@@ -38,7 +37,7 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         {
             if (skipDataSourceDeletionTest)
                 return;
-            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAiSearchChatHistoryDataService));
+            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
             Assert.IsNotNull(chatHistoryDataService);
             (List<AzureAiSearchChatSession.Models.LogMessage> messages, bool success) = 
                 await chatHistoryDataService.DeleteIfDataSourceExistsAsync(); 
@@ -51,7 +50,8 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         [DataRow("What is the capital of Pakistan")]
         public async Task AddDocumentAsyncTest(string question)
         {
-            IOptions<AzureOpenAIOptions> options = AppHost.GetServiceProvider().GetRequiredService<IOptions<AzureOpenAIOptions>>();
+            Log.Information("This is a log message from TestMethod1");
+            IOptions <AzureOpenAIOptions> options = AppHost.GetServiceProvider().GetRequiredService<IOptions<AzureOpenAIOptions>>();
             Assert.IsNotNull(options);
             //var openAI = new OpenAI(options.Value.Key, options.Value.Endpoint);
             AzureOpenAIOptions azureOpenAIOptions = options.Value as AzureOpenAIOptions;
@@ -76,8 +76,11 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
             //Create ChatDocument 
 
 
+            //Send the question to Azure Open Ai 
 
 
+           ChatMessageContent chatMessageContent = await  chatCompletionService.GetChatMessageContentAsync(question);
+           
           
 
         }

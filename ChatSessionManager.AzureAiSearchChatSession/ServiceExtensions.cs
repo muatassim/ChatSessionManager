@@ -8,7 +8,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
 {
     public static class ServiceExtensions
     {
-        public static void AddAzureAiSearchChatHistory(this IServiceCollection services, IConfiguration configuration)
+        public static void AddAzureAISearchChatHistory(this IServiceCollection services, IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration, nameof(configuration));
             ArgumentNullException.ThrowIfNull(services, nameof(services));
@@ -21,7 +21,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 logging.AddConsole();
                 logging.AddDebug();
             });
-            services.AddKeyedScoped<IChatHistoryDataService, AzureAiSearchChatHistoryDataService>(nameof(AzureAiSearchChatHistoryDataService));
+            services.AddKeyedScoped<IChatHistoryDataService, AzureAISearchChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
         }
     }
 }

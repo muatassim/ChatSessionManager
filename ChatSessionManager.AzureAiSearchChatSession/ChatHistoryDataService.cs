@@ -7,8 +7,8 @@ namespace ChatSessionManager.AzureAiSearchChatSession
 {
     public abstract class ChatHistoryDataService  : IChatHistoryDataService
     {
-        protected ILogger<AzureAiSearchChatHistoryDataService> Logger { get; }
-        public ChatHistoryDataService(ILogger<AzureAiSearchChatHistoryDataService> logger)
+        protected ILogger<AzureAISearchChatHistoryDataService> Logger { get; }
+        public ChatHistoryDataService(ILogger<AzureAISearchChatHistoryDataService> logger)
         {
              Logger = logger;
         }

@@ -13,12 +13,12 @@ using Humanizer;
 
 namespace ChatSessionManager.AzureAiSearchChatSession
 {
-    public class AzureAiSearchChatHistoryDataService : ChatHistoryDataService
+    public class AzureAISearchChatHistoryDataService : ChatHistoryDataService
     {
         readonly AzureAiSearch _settings;
-        private readonly ILogger<AzureAiSearchChatHistoryDataService> _logger;
-        public AzureAiSearchChatHistoryDataService(
-            IOptions<ChatSessionManagerOptions> options, ILogger<AzureAiSearchChatHistoryDataService> logger) : base(
+        private readonly ILogger<AzureAISearchChatHistoryDataService> _logger;
+        public AzureAISearchChatHistoryDataService(
+            IOptions<ChatSessionManagerOptions> options, ILogger<AzureAISearchChatHistoryDataService> logger) : base(
                 logger)
         {
             _settings = options.Value.AzureAiSearch;
@@ -65,6 +65,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 success = true;
                 messages.Add(new LogMessage($"{nameof(ChatDocument)} Index Successfully Deleted! ", MessageType.Info));
             }
+            PrintLogMessages(messages);
             return (messages, success);
         }
         /// <summary>
@@ -99,6 +100,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 _logger.LogError(ex.Message);
                 messages.Add(new LogMessage(ex.Message, MessageType.Error));
             }
+            PrintLogMessages(messages);
             return (messages, success);
 
         }
@@ -131,7 +133,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             {
                 _logger.LogError(ex.Message);
             }
-
+            PrintLogMessages(messages);
             return indexExists;
         }
 
@@ -178,6 +180,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             {
                 messages.Add(new LogMessage($"Error creating {nameof(ChatDocument)} Embedding: " + ex.Message, MessageType.Error));
             }
+            PrintLogMessages(messages);
             //Create Index Document  
             return await Task.FromResult((messages, success));
         }
