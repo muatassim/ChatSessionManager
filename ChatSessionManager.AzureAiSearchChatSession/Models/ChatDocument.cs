@@ -16,16 +16,31 @@
 
 
         /// <summary>
-        /// Message
+        /// Content
         /// </summary>
 
-        public string Message { get; set; }
+        public string Content { get; set; }
+
+
+        /// <summary>
+        /// IpAddress 
+        /// </summary>
+        public string IpAddress { get; set; }
+
+        /// <summary>
+        /// GEt 
+        /// </summary>
+        public string SessionId { get; set; }
 
         /// <summary>
         /// Created At
         /// </summary>
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Role of the message 
+        /// </summary>
+        public string Role { get; set; }
 
 
         /// <summary>
@@ -42,7 +57,7 @@
 
         public override string ToString()
         {
-            return $"Id: {Id}, UserId: {UserId}, Message: {Message}, CreatedAt: {CreatedAt}";
+            return $"Id: {Id}, UserId: {UserId}, Content: {Content}, CreatedAt: {Timestamp}";
         }
     }
 }
