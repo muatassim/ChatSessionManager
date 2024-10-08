@@ -14,13 +14,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             ArgumentNullException.ThrowIfNull(services, nameof(services));
             services.AddOptions();
             services.Configure<ChatSessionManagerOptions>(options => configuration.GetSection(nameof(ChatSessionManagerOptions)).Bind(options));
-            services.AddScoped<ChatSessionManagerOptions>();
-            services.AddLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-                logging.AddDebug();
-            });
+            services.AddScoped<ChatSessionManagerOptions>(); 
             services.AddKeyedScoped<IChatHistoryDataService, AzureAISearchChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
         }
     }
