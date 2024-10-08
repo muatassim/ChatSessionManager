@@ -4,15 +4,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <Description> ChatHistoryManager is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.</Description>
-	  <Version>1.0.1</Version>
+	  <Version>1.0.2</Version>
 	  <PackageReleaseNotes> Updated nuget packages  </PackageReleaseNotes> 
 	  <Authors>Muatassim Aziz</Authors>
 	  <Company>DevelopmentHelpers</Company>
 	  <Copyright>Development Helpers 2017-2025 </Copyright>
 	  <RepositoryUrl>https://github.com/muatassim/ChatSessionManager</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
-	  <AssemblyVersion>1.0.0.1</AssemblyVersion>
-	  <FileVersion>1.0.0.1</FileVersion>
+	  <AssemblyVersion>1.0.0.2</AssemblyVersion>
+	  <FileVersion>1.0.0.2</FileVersion>
 	  <Title>ChatSessionManager.AzureAiSearchChatSession</Title>
 	  <IncludeContentInPack>true</IncludeContentInPack>
 	  <PackageLicenseFile>LICENSE.md</PackageLicenseFile>

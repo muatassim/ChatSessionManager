@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using System.Reflection;
 namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
 {
     public class AppHost
@@ -12,21 +13,29 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
         public static IConfiguration Configuration => GetServiceProvider().GetService<IConfiguration>();
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureLogging((context, logging) =>
+            {
+                logging.ClearProviders();
+                //logging.AddConsole();
+                //logging.AddDebug();
+                try
+                {
+                    string fileName = $"{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}";
+                    string logFilePath = "Logs/" + Assembly.GetExecutingAssembly().GetName().Name + "-" + fileName + ".txt";
+                    logging.AddFile(logFilePath, LogLevel.Information, isJson: true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to configure file logging: {ex.Message}");
+                }
+            })
             .ConfigureAppConfiguration((context, config) =>
             {
                 var appAssembly = typeof(AppHost).Assembly;
-                config.AddUserSecrets(appAssembly, optional: true);
-                // config.AddUserSecrets<Program>();
+                config.AddUserSecrets(appAssembly, optional: true); 
             })
             .ConfigureServices((context, services) =>
-                {
-                    services.AddLogging(logging =>
-                    {
-                        logging.AddConsole();
-                        logging.AddDebug();
-                        logging.AddFile("Logs/log.txt", LogLevel.Information);
-
-                    });
+                { 
                     services.AddOptions();
                     services.Configure<AzureOpenAIOptions>(options => context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Bind(options));
                     services.AddScoped<AzureOpenAIOptions>();
@@ -52,19 +61,23 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
                     });
                     services.AddAzureAISearchChatHistory(context.Configuration);
                 });
-        private static IHost _host;
-
+        private static IHost _host; 
+       
         public static async Task RunAsync(string[] args)
         {
             IHost host = _host ?? CreateHostBuilder(args).Build();
             _host ??= host;
+
+            var logger = host.Services.GetRequiredService<ILogger<AppHost>>();
+            logger.LogInformation("Application starting up...");
+            ILoggerFactory loggerFactory = host.Services.GetRequiredService<ILoggerFactory>(); 
+
             await host.RunAsync();
-            // var myService = host.Services.GetRequiredService<MyService>();
-            //await myService.RunAsync();
         }
         public static IServiceProvider GetServiceProvider()
         {
-            _host ??= CreateHostBuilder([]).Build();
+            if (_host == null)
+                 RunAsync(null).RunSynchronously();
             return _host?.Services ?? CreateHostBuilder([]).Build().Services;
         }
 

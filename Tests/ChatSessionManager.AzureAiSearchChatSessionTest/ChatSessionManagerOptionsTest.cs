@@ -9,12 +9,15 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
     [TestClass]
     public class ChatSessionManagerOptionsTest
     {
-        private readonly ILogger<ChatSessionManagerOptionsTest> _logger;
-        public ChatSessionManagerOptionsTest()
+        private static ILogger<ChatSessionManagerOptionsTest> _logger;
+
+        [ClassInitialize]
+        public static void ClassInit(TestContext context)
         {
             _logger = AppHost.GetServiceProvider().GetRequiredService<ILogger<ChatSessionManagerOptionsTest>>();
-
+            _logger.LogInformation(context.FullyQualifiedTestClassName);
         }
+        
         [TestInitialize]
         public void Initialize()
         {
@@ -24,7 +27,9 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         public void ChatSessionManagerOptionsNotNull()
         {
 
-            IOptions<ChatSessionManagerOptions> options = AppHost.GetServiceProvider().GetRequiredService<IOptions<ChatSessionManagerOptions>>();
+            IOptions<ChatSessionManagerOptions> options =
+                AppHost.GetServiceProvider().GetRequiredService<IOptions<ChatSessionManagerOptions>>();
+            _logger.LogInformation($"{nameof(ChatSessionManagerOptions)} is not null");
             Assert.IsNotNull(options);
 
         }
