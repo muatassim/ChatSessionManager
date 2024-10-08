@@ -7,13 +7,13 @@ using Microsoft.Extensions.Options;
 namespace ChatSessionManager.AzureAiSearchChatSessionTest
 {
     [TestClass]
-    public class ChatSessionManagerOptionsTest 
+    public class ChatSessionManagerOptionsTest
     {
         private readonly ILogger<ChatSessionManagerOptionsTest> _logger;
         public ChatSessionManagerOptionsTest()
         {
             _logger = AppHost.GetServiceProvider().GetRequiredService<ILogger<ChatSessionManagerOptionsTest>>();
-            
+
         }
         [TestInitialize]
         public void Initialize()
@@ -23,14 +23,14 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         [TestMethod]
         public void ChatSessionManagerOptionsNotNull()
         {
-            
+
             IOptions<ChatSessionManagerOptions> options = AppHost.GetServiceProvider().GetRequiredService<IOptions<ChatSessionManagerOptions>>();
             Assert.IsNotNull(options);
 
         }
 
-     
-        
+
+
     }
 
 }

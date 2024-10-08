@@ -25,7 +25,8 @@
     ```sh
     dotnet restore
     ```
-4. **Add to Dependency Injection: **
+   
+4. **Add to Dependency Injection:**
     ```csharp
      //For Adding AzureAISearch 
      services.AddAzureAISearchChatHistory(context.Configuration);

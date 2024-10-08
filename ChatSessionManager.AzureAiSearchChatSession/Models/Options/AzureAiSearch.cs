@@ -1,4 +1,4 @@
-﻿  
+﻿
 namespace ChatSessionManager.AzureAiSearchChatSession.Models.Options
 {
     public class AzureAiSearch
@@ -24,7 +24,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession.Models.Options
 
         public string VectorSearchProfile { get; set; }
 
-        public string VectorSearchHNSWConfig {  get; set; }
+        public string VectorSearchHNSWConfig { get; set; }
 
         public int ModelDimension { get; set; }
 

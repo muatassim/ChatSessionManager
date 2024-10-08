@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
-using ChatSessionManager.AzureAiSearchChatSession.Interfaces;
+﻿using ChatSessionManager.AzureAiSearchChatSession.Interfaces;
 using ChatSessionManager.AzureAiSearchChatSession.Models;
 using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace ChatSessionManager.AzureAiSearchChatSession
 {
-    public abstract class ChatHistoryDataService  : IChatHistoryDataService
+    public abstract class ChatHistoryDataService : IChatHistoryDataService
     {
         protected ILogger<AzureAISearchChatHistoryDataService> Logger { get; }
         public ChatHistoryDataService(ILogger<AzureAISearchChatHistoryDataService> logger)
         {
-             Logger = logger;
+            Logger = logger;
         }
         /// <summary>
         /// Print to Log
@@ -26,10 +26,10 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                 {
                     case MessageType.Error:
                         Logger.LogError(message.Message);
-                    break;
+                        break;
                     case MessageType.Info:
                         Logger.LogInformation(message.Message);
-                    break;
+                        break;
                     case MessageType.Warning:
                         Logger.LogWarning(message.Message);
                         break;
@@ -88,7 +88,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
 
         public abstract Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5);
 
-       
+
         /// <summary>
         /// Get 
         /// </summary>
