@@ -18,7 +18,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession.Models.Options
                 (bool IsValid, string message) searchValidate = AzureAiSearch.Validate();
                 if (!searchValidate.IsValid)
                 {
-                     IsValid = false; 
+                    IsValid = false;
                 }
                 if (!string.IsNullOrEmpty(searchValidate.message))
                 {

@@ -81,9 +81,9 @@ namespace ChatSessionManager.AzureAiSearchChatSession.Interfaces
         Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId);
 
 
-       
- 
 
-      
+
+
+
     }
 }

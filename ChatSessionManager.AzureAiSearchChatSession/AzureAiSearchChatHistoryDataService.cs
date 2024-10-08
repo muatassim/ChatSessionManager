@@ -1,16 +1,16 @@
-﻿using Azure.Search.Documents.Indexes.Models;
-using Azure.Search.Documents.Indexes;
-using Azure;
-using System.Net;
-using Azure.Search.Documents.Models;
+﻿using Azure;
 using Azure.Search.Documents;
-using Microsoft.Extensions.Logging;
-using ChatSessionManager.AzureAiSearchChatSession.Models.Options;
-using Microsoft.Extensions.Options;
+using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
+using Azure.Search.Documents.Models;
 using ChatSessionManager.AzureAiSearchChatSession.Models;
 using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
+using ChatSessionManager.AzureAiSearchChatSession.Models.Options;
 using Humanizer;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace ChatSessionManager.AzureAiSearchChatSession
 {
@@ -130,10 +130,10 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async override Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size,string userId, double rerankerScoreThreshold = 3.5)
-        { 
-            var chatHistories = await GetDocumentsByQueryAsync(query, queryEmbeddings, size,userId, rerankerScoreThreshold);
-            if (chatHistories == null || chatHistories.Count<=0)
+        public async override Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5)
+        {
+            var chatHistories = await GetDocumentsByQueryAsync(query, queryEmbeddings, size, userId, rerankerScoreThreshold);
+            if (chatHistories == null || chatHistories.Count <= 0)
                 return null;
             var historyContext = new HistoryContext();
             foreach (var chatHistory in chatHistories)
@@ -324,7 +324,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
                         foreach (SearchResult<ChatDocument> result in response.Value.GetResults())
                         {
                             if (result?.Document?.UserId == userId
-                                && result?.SemanticSearch.RerankerScore >= rerankerScoreThreshold )
+                                && result?.SemanticSearch.RerankerScore >= rerankerScoreThreshold)
                             {
                                 chatDocuments.Add(result.Document);
                             }

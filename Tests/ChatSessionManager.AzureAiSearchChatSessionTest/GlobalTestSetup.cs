@@ -1,4 +1,4 @@
-﻿using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration; 
+﻿using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration;
 using System.Diagnostics;
 
 namespace ChatSessionManager.AzureAiSearchChatSessionTest
@@ -36,7 +36,7 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
         public static void AssemblyCleanup()
         {
             OpenLogFolder();
-           
+
         }
 
         private static void OpenLogFolder()

@@ -3,7 +3,7 @@
 namespace ChatSessionManager.AzureAiSearchChatSession.Models
 {
 
-    
+
     public class ChatDocument
     {
         [JsonPropertyName("id")]
