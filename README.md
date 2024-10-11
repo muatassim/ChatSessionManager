@@ -1,7 +1,7 @@
-# ChatSessionManager 
+# ChatSessionManager
 
 ## Overview
-**ChatHistoryManager** is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.
+**ChatHistoryManager** is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications. It supports multiple implementations, including **Azure AI Search** and **Cosmos DB**.
 
 ## Features
 - **Efficient Data Storage:** Store chat sessions in a structured format.
@@ -9,6 +9,8 @@
 - **Scalability:** Designed to handle large volumes of chat data.
 - **Extensible:** Easily integrate with various AI frameworks and tools.
 - **Secure:** Ensure data integrity and security.
+- **Multiple Implementations:** Leverage different backends like Azure AI Search and Cosmos DB to suit your needs.
+
 
 ## Installation
 1. **Clone the repository:**
@@ -20,7 +22,7 @@
     ```sh
     cd ChatSessionManager
     ```
-
+ 
 3. **Install dependencies:**
     ```sh
     dotnet restore
@@ -28,8 +30,10 @@
    
 4. **Add to Dependency Injection:**
     ```csharp
-     //For Adding AzureAISearch 
+     //For Adding AzureAISearch and AzureAiSearch opitons value : Required
      services.AddAzureAISearchChatHistory(context.Configuration);
+     //For Cosmos and CosmosSearch configuration is required
+     services.AddCosmosChatHistory(context.Configuration);
     ```
 
 # Chat History Data Service
@@ -39,10 +43,11 @@ The `IChatHistoryDataService` interface provides various methods for managing an
 
 Add the following settings to your `appsettings.json` file:
 
+
 ```json
 {
   "ChatSessionManagerOptions": {
-    "AzureAiSearch": {
+    "AzureAiSearch": {  
       "ServiceName": "--Azure Ai Service Name--",  
       "ApiKey": "--API KEY--",
       "SemanticSearchConfigName": "my-semantic-config",
@@ -50,13 +55,26 @@ Add the following settings to your `appsettings.json` file:
       "VectorSearchProfile": "my-vector-profile",
       "ModelDimension": "1536",
       "IndexName": "INDEX NAME"
-    }
+    },
+     "CosmosSearch": {
+        "DatabaseId": "Database Id",
+        "ContainerId": "Container ",
+        "AccountEndpoint": "Cosmos End Point",
+        "AccountKey": "Account Key"
+     }
   }
 }
+
 ```
 
 ### Usage
-To integrate the `AzureAISearchChatHistoryDataService` implementation of the `IChatHistoryDataService` interface, follow these steps:
+To integrate IChatHistoryDataService in your project. Follwoing implementation can be used
+
+1. `AzureAISearchChatHistoryDataService` which utilizes Azure AI Search:
+   - **Constructor**: `[FromKeyedServices(nameof(AzureAISearchChatHistoryDataService))] IChatHistoryDataService dataService`
+2. `AzureCosmosSearchChatHistoryDataService` which utilizes Cosmos DB on preview: for details refer: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/vector-search 
+   - **Constructor**: `[FromKeyedServices(nameof(CosmosChatHistoryDataService))] IChatHistoryDataService dataService`
+
 
 ## Semantic Kernel Chat Example 
 This section shows how to use the Semantic Kernel chat with history. The example demonstrates how to ask a series of questions where the context from previous answers is important.

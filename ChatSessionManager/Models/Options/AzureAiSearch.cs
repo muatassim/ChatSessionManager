@@ -1,5 +1,4 @@
-﻿
-namespace ChatSessionManager.AzureAiSearchChatSession.Models.Options
+﻿namespace ChatSessionManager.Models.Options
 {
     public class AzureAiSearch
     {

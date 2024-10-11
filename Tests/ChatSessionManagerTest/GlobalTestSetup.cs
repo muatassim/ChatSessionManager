@@ -1,7 +1,7 @@
-﻿using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration;
+﻿using ChatSessionManagerTest.Configuration;
 using System.Diagnostics;
 
-namespace ChatSessionManager.AzureAiSearchChatSessionTest
+namespace ChatSessionManagerTest
 {
     [TestClass]
     public class GlobalTestSetup
