@@ -3,16 +3,17 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Azure.Search.Documents.Models;
-using ChatSessionManager.AzureAiSearchChatSession.Models;
-using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
-using ChatSessionManager.AzureAiSearchChatSession.Models.Options;
+using ChatSessionManager.Helpers;
+using ChatSessionManager.Models;
+using ChatSessionManager.Models.Enums;
+using ChatSessionManager.Models.Options;
 using Humanizer;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
 using System.Net;
 
-namespace ChatSessionManager.AzureAiSearchChatSession
+namespace ChatSessionManager
 {
     public class AzureAISearchChatHistoryDataService : ChatHistoryDataService
     {
@@ -22,6 +23,9 @@ namespace ChatSessionManager.AzureAiSearchChatSession
             IOptions<ChatSessionManagerOptions> options, ILogger<AzureAISearchChatHistoryDataService> logger) : base(
                 logger)
         {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(options.Value);
+            ArgumentNullException.ThrowIfNull(logger);
             _settings = options.Value.AzureAiSearch;
             _logger = logger;
             var (IsValid, message) = _settings.Validate();
@@ -185,6 +189,17 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         {
             bool success = false;
             List<LogMessage> messages = [];
+            if (chatDocument == null)
+            {
+                messages.Add(new LogMessage($"{nameof(ChatDocument)} is required!", MessageType.Error));
+                return (messages, false);
+            }
+            (bool IsValid, string message) = chatDocument.Validate();
+            if (!IsValid)
+            {
+                messages.Add(new LogMessage($"{message}", MessageType.Error));
+                return (messages, false);
+            }
             try
             {
 

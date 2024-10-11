@@ -1,6 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using ChatSessionManager.Models.Options;
+using System.Text.Json.Serialization;
 
-namespace ChatSessionManager.AzureAiSearchChatSession.Models
+namespace ChatSessionManager.Models
 {
 
 
@@ -73,6 +74,31 @@ namespace ChatSessionManager.AzureAiSearchChatSession.Models
         public override string ToString()
         {
             return $"Id: {Id}, UserId: {UserId}, Content: {Content}, CreatedAt: {Timestamp}";
+        }
+
+        public (bool IsValid, string message) Validate()
+        {
+            var IsValid = true;
+            List<string> errors = [];
+
+            if (string.IsNullOrEmpty(Id))
+            {
+                IsValid = false;
+                errors.Add($"{nameof(AzureAiSearch)} Validation error: {nameof(Id)} is Required");
+            }
+            if (string.IsNullOrEmpty(UserId))
+            {
+                IsValid = false;
+                errors.Add($"{nameof(AzureAiSearch)} Validation error: {nameof(UserId)} is Required");
+            }
+            if (string.IsNullOrEmpty(Question))
+            {
+                IsValid = false;
+                errors.Add($"{nameof(AzureAiSearch)} Validation error: {nameof(Question)} is Required");
+            }
+
+
+            return (IsValid, string.Join(", ", errors));
         }
     }
 }

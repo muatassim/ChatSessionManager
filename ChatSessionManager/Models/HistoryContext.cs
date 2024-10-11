@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ChatSessionManager.AzureAiSearchChatSession.Models
+namespace ChatSessionManager.Models
 {
     public class HistoryContext
     {
@@ -8,7 +8,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession.Models
 
         public HistoryContext()
         {
-            ChatHistories = new List<ChatDocument>();
+            ChatHistories = [];
         }
 
         public void AddHistory(ChatDocument chatHistory)

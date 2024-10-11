@@ -1,4 +1,4 @@
-﻿namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration.Model
+﻿namespace ChatSessionManagerTest.Configuration.Model
 {
     public class AzureOpenAIOptions
     {

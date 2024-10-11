@@ -1,7 +1,7 @@
-﻿using ChatSessionManager.AzureAiSearchChatSession.Models;
+﻿using ChatSessionManager.Models;
 using System.Linq.Expressions;
 
-namespace ChatSessionManager.AzureAiSearchChatSession.Interfaces
+namespace ChatSessionManager.Interfaces
 {
     public interface IChatHistoryDataService
     {

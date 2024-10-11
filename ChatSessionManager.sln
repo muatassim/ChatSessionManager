@@ -5,9 +5,16 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{34A4C092-52BF-40CB-B85D-271430DEBA9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSessionManager.AzureAiSearchChatSessionTest", "Tests\ChatSessionManager.AzureAiSearchChatSessionTest\ChatSessionManager.AzureAiSearchChatSessionTest.csproj", "{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSessionManager", "ChatSessionManager\ChatSessionManager.csproj", "{E7F4FDD1-7DFD-473C-A6FE-6743B4C6BD6E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSessionManager.AzureAiSearchChatSession", "ChatSessionManager.AzureAiSearchChatSession\ChatSessionManager.AzureAiSearchChatSession.csproj", "{9274CBE0-83B8-4B9B-9292-29671390B065}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSessionManagerTest", "Tests\ChatSessionManagerTest\ChatSessionManagerTest.csproj", "{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EA6B3A91-4171-4072-A77E-965B548BA320}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+		SECURITY.md = SECURITY.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,20 +22,20 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9274CBE0-83B8-4B9B-9292-29671390B065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9274CBE0-83B8-4B9B-9292-29671390B065}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9274CBE0-83B8-4B9B-9292-29671390B065}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9274CBE0-83B8-4B9B-9292-29671390B065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7F4FDD1-7DFD-473C-A6FE-6743B4C6BD6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7F4FDD1-7DFD-473C-A6FE-6743B4C6BD6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7F4FDD1-7DFD-473C-A6FE-6743B4C6BD6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7F4FDD1-7DFD-473C-A6FE-6743B4C6BD6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C1FCF6C5-FB55-49A5-BFC5-3E39F5C3D6C1} = {34A4C092-52BF-40CB-B85D-271430DEBA9F}
+		{86EC4F89-A9C1-4BF5-80E9-0B32ECA79E23} = {34A4C092-52BF-40CB-B85D-271430DEBA9F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D36045E5-1B0D-4F84-A42F-A29631B63942}

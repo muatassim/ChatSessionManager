@@ -1,8 +1,8 @@
-﻿using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
+﻿using ChatSessionManager.Models.Enums;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace ChatSessionManager.AzureAiSearchChatSession.Models
+namespace ChatSessionManager.Models
 {
     public class LogMessage
     {

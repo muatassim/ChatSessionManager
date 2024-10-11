@@ -4,16 +4,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <Description> ChatHistoryManager is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.</Description>
-	  <Version>1.0.3</Version>
-	  <PackageReleaseNotes> Updated nuget packages  </PackageReleaseNotes> 
+	  <Version>1.0.5</Version>
+	  <PackageReleaseNotes> Added implmentation for Cosmos and Azure Ai Search. Cosoms is still on previous </PackageReleaseNotes> 
 	  <Authors>Muatassim Aziz</Authors>
 	  <Company>DevelopmentHelpers</Company>
 	  <Copyright>Development Helpers 2017-2025 </Copyright>
 	  <RepositoryUrl>https://github.com/muatassim/ChatSessionManager</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
-	  <AssemblyVersion>1.0.0.3</AssemblyVersion>
-	  <FileVersion>1.0.0.3</FileVersion>
-	  <Title>ChatSessionManager.AzureAiSearchChatSession</Title>
+	  <AssemblyVersion>1.0.0.5</AssemblyVersion>
+	  <FileVersion>1.0.0.5</FileVersion>
+	  <Title>ChatSessionManager</Title>
 	  <IncludeContentInPack>true</IncludeContentInPack>
 	  <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,6 +27,7 @@
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Humanizer" Version="2.14.1" />
+		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.45.0-preview.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
@@ -47,9 +48,5 @@
 			<PackagePath></PackagePath>
 			<Visible>True</Visible>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Helpers\" />
 	</ItemGroup>
 </Project>

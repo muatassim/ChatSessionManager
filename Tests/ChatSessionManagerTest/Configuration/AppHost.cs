@@ -1,12 +1,12 @@
-﻿using ChatSessionManager.AzureAiSearchChatSession;
-using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration.Model;
+﻿using ChatSessionManager;
+using ChatSessionManagerTest.Configuration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using System.Reflection;
-namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
+namespace ChatSessionManagerTest.Configuration
 {
     public class AppHost
     {
@@ -32,10 +32,10 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
             .ConfigureAppConfiguration((context, config) =>
             {
                 var appAssembly = typeof(AppHost).Assembly;
-                config.AddUserSecrets(appAssembly, optional: true); 
+                config.AddUserSecrets(appAssembly, optional: true);
             })
             .ConfigureServices((context, services) =>
-                { 
+                {
                     services.AddOptions();
                     services.Configure<AzureOpenAIOptions>(options => context.Configuration.GetSection(nameof(AzureOpenAIOptions)).Bind(options));
                     services.AddScoped<AzureOpenAIOptions>();
@@ -60,9 +60,10 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
                         return new Kernel(serviceProvider);
                     });
                     services.AddAzureAISearchChatHistory(context.Configuration);
+                    services.AddCosmosChatHistory(context.Configuration);
                 });
-        private static IHost _host; 
-       
+        private static IHost _host;
+
         public static async Task RunAsync(string[] args)
         {
             IHost host = _host ?? CreateHostBuilder(args).Build();
@@ -70,14 +71,12 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest.Configuration
 
             var logger = host.Services.GetRequiredService<ILogger<AppHost>>();
             logger.LogInformation("Application starting up...");
-            ILoggerFactory loggerFactory = host.Services.GetRequiredService<ILoggerFactory>(); 
+            ILoggerFactory loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
 
             await host.RunAsync();
         }
         public static IServiceProvider GetServiceProvider()
         {
-            if (_host == null)
-                 RunAsync(null).RunSynchronously();
             return _host?.Services ?? CreateHostBuilder([]).Build().Services;
         }
 

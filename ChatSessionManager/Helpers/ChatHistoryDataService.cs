@@ -1,15 +1,15 @@
-﻿using ChatSessionManager.AzureAiSearchChatSession.Interfaces;
-using ChatSessionManager.AzureAiSearchChatSession.Models;
-using ChatSessionManager.AzureAiSearchChatSession.Models.Enums;
+﻿using ChatSessionManager.Interfaces;
+using ChatSessionManager.Models;
+using ChatSessionManager.Models.Enums;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
-namespace ChatSessionManager.AzureAiSearchChatSession
+namespace ChatSessionManager.Helpers
 {
     public abstract class ChatHistoryDataService : IChatHistoryDataService
     {
-        protected ILogger<AzureAISearchChatHistoryDataService> Logger { get; }
-        public ChatHistoryDataService(ILogger<AzureAISearchChatHistoryDataService> logger)
+        protected ILogger<ChatHistoryDataService> Logger { get; }
+        public ChatHistoryDataService(ILogger<ChatHistoryDataService> logger)
         {
             Logger = logger;
         }
@@ -83,7 +83,7 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         /// <param name="queryEmbeddings"></param>
         /// <param name="size"></param>
         /// <param name="userId"></param>
-        /// <param name="rerankerScoreThreshold"></param>
+        /// <param name="rerankerScoreThreshold">reranker score do not apply to cosmos, provide if needed only for azure ai search</param>
         /// <returns></returns>
 
         public abstract Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5);
@@ -114,8 +114,33 @@ namespace ChatSessionManager.AzureAiSearchChatSession
         /// <param name="userId"></param>
         /// <returns></returns>
         public abstract Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold);
+
+
+        /// <summary>
+        /// Cosine Similarity
+        /// </summary>
+        /// <param name="vectorA"></param>
+        /// <param name="vectorB"></param>
+        /// <returns></returns>
+        protected double CosineSimilarity(float[] vectorA, float[] vectorB)
+        {
+            double dotProduct = 0;
+            double magnitudeA = 0;
+            double magnitudeB = 0;
+
+            for (int i = 0; i < vectorA.Length; i++)
+            {
+                dotProduct += vectorA[i] * vectorB[i];
+                magnitudeA += Math.Pow(vectorA[i], 2);
+                magnitudeB += Math.Pow(vectorB[i], 2);
+            }
+
+            if (magnitudeA == 0 || magnitudeB == 0)
+                return 0;
+
+            return dotProduct / (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB));
+        }
+
     }
-
-
 
 }

@@ -1,10 +1,10 @@
-using ChatSessionManager.AzureAiSearchChatSession.Models.Options;
-using ChatSessionManager.AzureAiSearchChatSessionTest.Configuration;
+using ChatSessionManager.Models.Options;
+using ChatSessionManagerTest.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ChatSessionManager.AzureAiSearchChatSessionTest
+namespace ChatSessionManagerTest
 {
     [TestClass]
     public class ChatSessionManagerOptionsTest
@@ -17,7 +17,7 @@ namespace ChatSessionManager.AzureAiSearchChatSessionTest
             _logger = AppHost.GetServiceProvider().GetRequiredService<ILogger<ChatSessionManagerOptionsTest>>();
             _logger.LogInformation(context.FullyQualifiedTestClassName);
         }
-        
+
         [TestInitialize]
         public void Initialize()
         {
