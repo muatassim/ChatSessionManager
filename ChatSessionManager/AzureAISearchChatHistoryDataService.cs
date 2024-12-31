@@ -2,7 +2,7 @@
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
-using Azure.Search.Documents.Models;
+using Azure.Search.Documents.Models; 
 using ChatSessionManager.Helpers;
 using ChatSessionManager.Models;
 using ChatSessionManager.Models.Enums;
