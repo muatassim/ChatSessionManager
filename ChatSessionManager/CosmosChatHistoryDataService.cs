@@ -3,8 +3,7 @@ using Azure;
 using ChatSessionManager.Helpers;
 using ChatSessionManager.Models;
 using ChatSessionManager.Models.Enums;
-using ChatSessionManager.Models.Options;
-using Humanizer;
+using ChatSessionManager.Models.Options; 
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Logging;
@@ -206,7 +205,7 @@ namespace ChatSessionManager
 
                 using FeedIterator<ChatDocument> resultSet = container.GetItemQueryIterator<ChatDocument>(queryDefinition: queryDef);
 
-                List<ChatDocument> documents = new List<ChatDocument>();
+                List<ChatDocument> documents = [];
                 while (resultSet.HasMoreResults)
                 {
                     FeedResponse<ChatDocument> response = await resultSet.ReadNextAsync();
@@ -379,14 +378,14 @@ namespace ChatSessionManager
             IndexingPolicy policy = new()
             {
                 IndexingMode = IndexingMode.Consistent,
-                VectorIndexes = new Collection<VectorIndexPath>()
-                {
-                    new VectorIndexPath()
+                VectorIndexes =
+                [
+                    new ()
                     {
                         Path="/questionVector",
                         Type= VectorIndexType.QuantizedFlat
                     }
-                }
+                ]
             }; 
 
             VectorEmbeddingPolicy vectorEmbeddingPolicy = new(

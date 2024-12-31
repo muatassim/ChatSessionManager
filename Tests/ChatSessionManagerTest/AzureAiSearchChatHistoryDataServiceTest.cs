@@ -128,7 +128,7 @@ namespace ChatSessionManagerTest
         }
 
         [DataTestMethod]
-        [DataRow("What is the capital of Pakistan")]
+        [DataRow("I'm planning a trip to Paris. Can you tell me the best time of year to visit and some must-see attractions?")]
         public async Task GetDocumentByQueryFindAsync_Test(string question)
         {
             IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
@@ -233,7 +233,7 @@ namespace ChatSessionManagerTest
 
             ChatMessageContent messageContent = await chatCompletionService.GetChatMessageContentAsync(question);
             //Save Question 1 and Response 
-            // await SaveChat(question, chatHistoryDataService, questionEmbedding, chatHistory, messageContent);
+             await SaveChat(question, chatHistoryDataService, questionEmbedding, chatHistory, messageContent);
         }
         private static async Task SaveChat(string question, IChatHistoryDataService chatHistoryDataService, ReadOnlyMemory<float> questionEmbedding, ChatHistory chatHistory, ChatMessageContent messageContent)
         {
