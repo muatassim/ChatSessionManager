@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description> ChatHistoryManager is a robust and scalable solution designed to store and query chat history data for AI applications. This repository contains the core components necessary to seamlessly integrate chat session storage into your AI-driven applications.</Description>
+    <Version>1.0.6</Version>
+    <PackageReleaseNotes> Added implmentation for Cosmos and Azure Ai Search. Cosoms is still on previous </PackageReleaseNotes>
+    <Authors>Muatassim Aziz</Authors>
+    <Company>DevelopmentHelpers</Company>
+    <Copyright>Development Helpers 2017-2025 </Copyright>
+    <RepositoryUrl>https://github.com/muatassim/ChatSessionManager</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <FileVersion>1.0.0.6</FileVersion>
+    <Title>ChatSessionManager</Title>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- For Debugging -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!--if use Debug Type symbols are embedded in dll   -->
+    <DebugType>embedded</DebugType>
+    <!-- Deterministic -->
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <AzureCosmosDisableNewtonsoftJsonCheck>true</AzureCosmosDisableNewtonsoftJsonCheck>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer" Version="2.14.1" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.46.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+    <PackageReference Include="Azure.Search.Documents" Version="11.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Pack>true</Pack>
+      <PackagePath>
+      </PackagePath>
+      <Visible>True</Visible>
+    </None>
+    <None Include="LICENSE.md">
+      <Pack>true</Pack>
+      <PackagePath>
+      </PackagePath>
+      <Visible>True</Visible>
+    </None>
+  </ItemGroup>
+</Project>
