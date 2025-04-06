@@ -88,7 +88,7 @@ namespace ChatSessionManagerTest
         {
             IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(AzureAISearchChatHistoryDataService));
             Assert.IsNotNull(chatHistoryDataService);
-            Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>(); 
+            Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
             Assert.IsNotNull(kernel);
             ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
             Assert.IsNotNull(textEmbeddingGenerationService);
@@ -233,7 +233,7 @@ namespace ChatSessionManagerTest
 
             ChatMessageContent messageContent = await chatCompletionService.GetChatMessageContentAsync(question);
             //Save Question 1 and Response 
-             await SaveChat(question, chatHistoryDataService, questionEmbedding, chatHistory, messageContent);
+            await SaveChat(question, chatHistoryDataService, questionEmbedding, chatHistory, messageContent);
         }
         private static async Task SaveChat(string question, IChatHistoryDataService chatHistoryDataService, ReadOnlyMemory<float> questionEmbedding, ChatHistory chatHistory, ChatMessageContent messageContent)
         {

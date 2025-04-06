@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Embeddings;
-using Microsoft.VisualBasic;
 using System.Linq.Expressions;
 namespace ChatSessionManagerTest
 {
@@ -17,7 +16,7 @@ namespace ChatSessionManagerTest
     {
         static readonly bool skipDataSourceDeletionTest = true;
         static readonly string userId = "B85A4454-A007-449C-B1DA-0136BFE6248B";
-        static readonly string sessionId = Guid.NewGuid().ToString(); 
+        static readonly string sessionId = Guid.NewGuid().ToString();
         [TestMethod]
         public void CosmosChatHistoryDataServiceTestIsNotNull()
         {
@@ -77,7 +76,7 @@ namespace ChatSessionManagerTest
                 Timestamp = DateTime.UtcNow,
                 Role = "user",
                 QuestionVector = questionEmbedding,
-                Question =  question
+                Question = question
             };
 
             (List<LogMessage> messages, bool success) = await chatHistoryDataService.AddDocumentAsync(chatDocument);

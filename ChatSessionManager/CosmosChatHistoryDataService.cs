@@ -1,16 +1,16 @@
-﻿ 
+﻿
 using Azure;
 using ChatSessionManager.Helpers;
 using ChatSessionManager.Models;
 using ChatSessionManager.Models.Enums;
-using ChatSessionManager.Models.Options; 
+using ChatSessionManager.Models.Options;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq.Expressions;
-using Microsoft.Azure.Cosmos.Linq;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
 namespace ChatSessionManager
 {
@@ -193,7 +193,7 @@ namespace ChatSessionManager
             }
             try
             {
-                string queryText = "SELECT Top "+size+ @"   c.id, c.userId, c.question, c.content, 
+                string queryText = "SELECT Top " + size + @"   c.id, c.userId, c.question, c.content, 
         c.sessionId, c.timestamp, c.role, c.ipAddress, VectorDistance(c.questionVector, @questionVector, false) as similarityScore FROM c 
                                     WHERE c.userId = @userId ORDER BY c.similarityScore desc";
 
@@ -201,7 +201,7 @@ namespace ChatSessionManager
                   query: queryText)
               .WithParameter("@questionVector", queryEmbeddings)
               .WithParameter("@userId", userId);
-             // .WithParameter("@score",rerankerScoreThreshold);
+                // .WithParameter("@score",rerankerScoreThreshold);
 
                 using FeedIterator<ChatDocument> resultSet = container.GetItemQueryIterator<ChatDocument>(queryDefinition: queryDef);
 
@@ -386,7 +386,7 @@ namespace ChatSessionManager
                         Type= VectorIndexType.QuantizedFlat
                     }
                 ]
-            }; 
+            };
 
             VectorEmbeddingPolicy vectorEmbeddingPolicy = new(
                 new Collection<Embedding>(
@@ -407,7 +407,7 @@ namespace ChatSessionManager
                 VectorEmbeddingPolicy = vectorEmbeddingPolicy
             };
 
-            ContainerResponse containerResponse = await databaseResponse.Database.CreateContainerIfNotExistsAsync(containerProperties,throughputProperties);
+            ContainerResponse containerResponse = await databaseResponse.Database.CreateContainerIfNotExistsAsync(containerProperties, throughputProperties);
             if (containerResponse.StatusCode != System.Net.HttpStatusCode.Created && containerResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId}, Container:{_settings.ContainerId} does not exist . Status code: {containerResponse.StatusCode}", MessageType.Error));
