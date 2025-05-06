@@ -15,7 +15,7 @@
     <FileVersion>1.0.0.9</FileVersion>
     <Title>ChatSessionManager</Title>
     <IncludeContentInPack>true</IncludeContentInPack>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile> 
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- For Debugging -->
     <IncludeSymbols>true</IncludeSymbols>
