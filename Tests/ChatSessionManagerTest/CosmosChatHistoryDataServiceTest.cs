@@ -17,6 +17,52 @@ namespace ChatSessionManagerTest
         static readonly bool skipDataSourceDeletionTest = true;
         static readonly string userId = "B85A4454-A007-449C-B1DA-0136BFE6248B";
         static readonly string sessionId = Guid.NewGuid().ToString();
+
+
+        [TestInitialize]
+        public async Task InitializeTestDataAsync()
+        {
+            IChatHistoryDataService chatHistoryDataService =
+                AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(CosmosChatHistoryDataService));
+            Assert.IsNotNull(chatHistoryDataService);
+
+            Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
+            Assert.IsNotNull(kernel);
+
+            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+            Assert.IsNotNull(textEmbeddingGenerationService);
+
+            var sampleQuestions = new List<string>
+            {
+                "What is the capital of France?",
+                "How does machine learning work?",
+                "Tell me a fun fact about space."
+            };
+
+            foreach (var question in sampleQuestions)
+            {
+                ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+                Assert.IsNotNull(questionEmbedding);
+
+                ChatDocument chatDocument = new()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserId = userId,
+                    Content = $"Sample response for '{question}'",
+                    IpAddress = "127.0.0.1",
+                    SessionId = sessionId,
+                    Timestamp = DateTime.UtcNow,
+                    QuestionVector = questionEmbedding,
+                    Question = question,
+                    Role = AuthorRole.User.Label
+                };
+
+                (_, bool success) = await chatHistoryDataService.AddDocumentAsync(chatDocument);
+                Assert.IsTrue(success);
+            }
+        }
+
+
         [TestMethod]
         public void CosmosChatHistoryDataServiceTestIsNotNull()
         {
@@ -53,7 +99,7 @@ namespace ChatSessionManagerTest
         [DataTestMethod]
         [DataRow("What is the capital of Pakistan")]
         [DataRow("what is the capital of India")]
-        public async Task AddDocumetsAsyncTest(string question)
+        public async Task AddDocumentsAsyncTest(string question)
         {
             IChatHistoryDataService chatHistoryDataService =
                 AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(CosmosChatHistoryDataService));
@@ -146,9 +192,8 @@ namespace ChatSessionManagerTest
             Assert.IsNotNull(records);
         }
 
-        [TestMethod]
-        [DataRow("B85A4454-A007-449C-B1DA-0136BFE6248B")]
-        public async Task GetDocumentFindAllAsync_Test(string userId)
+        [TestMethod] 
+        public async Task GetDocumentFindAllAsync_Test()
         {
             IChatHistoryDataService chatHistoryDataService =
                 AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(CosmosChatHistoryDataService));
@@ -161,9 +206,8 @@ namespace ChatSessionManagerTest
         }
 
 
-        [TestMethod]
-        [DataRow("B85A4454-A007-449C-B1DA-0136BFE6248B")]
-        public async Task GetHistoryContextByUserId(string userId)
+        [TestMethod] 
+        public async Task GetHistoryContextByUserId ()
         {
             IChatHistoryDataService chatHistoryDataService =
                 AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(CosmosChatHistoryDataService));
@@ -175,7 +219,16 @@ namespace ChatSessionManagerTest
             Assert.IsNotNull(context);
         }
 
-
+        [TestMethod]
+        public async Task FindDocumentsByUserIdAndSessionIdAsync_Test()
+        {
+            IChatHistoryDataService chatHistoryDataService = AppHost.GetServiceProvider().GetKeyedService<IChatHistoryDataService>(nameof(CosmosChatHistoryDataService));
+            Assert.IsNotNull(chatHistoryDataService);
+            Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
+            Expression<Func<ChatDocument, bool>> expr = x => x.UserId == userId && x.SessionId == sessionId;
+            ChatDocument records = await chatHistoryDataService.FindAsync(expr);
+            Assert.IsNotNull(records);
+        }
 
         [TestMethod]
         [DataRow("I'm planning a trip to Paris. Can you tell me the best time of year to visit and some must-see attractions?",
@@ -232,7 +285,7 @@ namespace ChatSessionManagerTest
         {
             ///Question 1 Record 
             ChatHistory chatHistory = [];
-            chatHistory.AddSystemMessage("You are an AI assistant who answers the users questions in a thoughtfull manner and are precise with your answer.");
+            chatHistory.AddSystemMessage("You are an AI assistant who answers the users questions in a thought full manner and are precise with your answer.");
             //Add history and usermessage 
             var historyContext = await chatHistoryDataService.GetChatHistoryContextAsync(question, questionEmbedding, 2, userId, 0.5);
             if (historyContext != null)

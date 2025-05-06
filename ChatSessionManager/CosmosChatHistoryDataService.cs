@@ -59,7 +59,7 @@ namespace ChatSessionManager
             }
             try
             {
-                (Container container, List<LogMessage> logMessages, bool success) = await GetContainerAsync();
+                (Container container, _, bool success) = await GetContainerAsync();
                 if (container == null)
                 {
                     return (messages, success);
@@ -121,7 +121,7 @@ namespace ChatSessionManager
 
         public override async Task<ChatDocument> FindAsync(Expression<Func<ChatDocument, bool>> predicate)
         {
-            (Container container, List<LogMessage> logMessages, bool success) = await GetContainerAsync();
+            (Container container, _, bool success) = await GetContainerAsync();
             if (container == null)
             {
                 return null;
@@ -158,7 +158,7 @@ namespace ChatSessionManager
         public override async Task<HistoryContext> GetChatHistoryContextAsync(Expression<Func<ChatDocument, bool>> predicate)
         {
             var chatHistories = await FindAllAsync(predicate);
-            if (chatHistories == null || chatHistories.Count <= 0)
+            if (chatHistories is not { Count: > 0 })
                 return null;
             var historyContext = new HistoryContext();
 
@@ -174,7 +174,7 @@ namespace ChatSessionManager
         public override async Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold)
         {
             var chatHistories = await GetDocumentsByQueryAsync(query, queryEmbeddings, size, userId, rerankerScoreThreshold);
-            if (chatHistories == null || chatHistories.Count <= 0)
+            if (chatHistories is not { Count: > 0 })
                 return null;
             var historyContext = new HistoryContext();
             foreach (var chatHistory in chatHistories)
@@ -256,6 +256,44 @@ namespace ChatSessionManager
             }
             return null;
         }
+
+        public override async Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId)
+        {
+            (Container container, List<LogMessage> logMessages, bool success) = await GetContainerAsync();
+
+            if (container == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var query = new QueryDefinition("SELECT * FROM c WHERE c.userId = @userId AND c.sessionId = @sessionId")
+                    .WithParameter("@userId", userId)
+                    .WithParameter("@sessionId", sessionId);
+
+                var iterator = container.GetItemQueryIterator<ChatDocument>(query);
+                var results = new List<ChatDocument>();
+
+                while (iterator.HasMoreResults)
+                {
+                    results.AddRange(await iterator.ReadNextAsync());
+                }
+
+                return results;
+            }
+            catch (CosmosException ex)
+            {
+                _logger.LogError(ex, "CosmosDB error occurred while searching");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error occurred while searching");
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Create Data Source if not exists 
         /// </summary>
@@ -343,7 +381,7 @@ namespace ChatSessionManager
                 }
                 else
                 {
-                    messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId}, Deleted Successfull", MessageType.Info));
+                    messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId}, Deleted Successfully", MessageType.Info));
                 }
 
             }

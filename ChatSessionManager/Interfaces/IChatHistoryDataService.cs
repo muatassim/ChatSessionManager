@@ -73,6 +73,10 @@ namespace ChatSessionManager.Interfaces
         /// <param name="rerankerScoreThreshold"></param>
         /// <returns></returns>
         Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5);
+
+
+
+
         /// <summary>
         /// Get Document by UserId 
         /// </summary>
@@ -83,7 +87,13 @@ namespace ChatSessionManager.Interfaces
 
 
 
-
+        /// <summary>
+        /// Get Document by UserId and SessionId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId);
 
     }
 }
