@@ -37,7 +37,7 @@ namespace ChatSessionManager
         /// Get Chat Documents by UserId
         /// </summary>
         /// <returns></returns>
-        public async override Task<(List<LogMessage> messages, bool success)> DeleteIfDataSourceExistsAsync()
+        public override async Task<(List<LogMessage> messages, bool success)> DeleteIfDataSourceExistsAsync()
         {
             bool success = false;
             List<LogMessage> messages = [];
@@ -47,7 +47,7 @@ namespace ChatSessionManager
             try
             {
                 Task<Response<SearchIndex>> response = _searchIndexClient.GetIndexAsync(_settings.IndexName);
-                if (response != null && response.Result != null && response.Result.Value != null)
+                if (response is { Result.Value: not null })
                 {
                     indexExists = true;
                 }
@@ -78,7 +78,7 @@ namespace ChatSessionManager
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async override Task<(List<LogMessage> messages, bool success)> CreateDataSourceIfNotExistAsync()
+        public override async Task<(List<LogMessage> messages, bool success)> CreateDataSourceIfNotExistAsync()
         {
             bool success = false;
             List<LogMessage> messages = [];
@@ -110,14 +110,14 @@ namespace ChatSessionManager
 
         }
         /// <summary>
-        /// Get History Context 
+        /// Get Chat History Context
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public async override Task<HistoryContext> GetChatHistoryContextAsync(Expression<Func<ChatDocument, bool>> predicate)
+        public override async Task<HistoryContext> GetChatHistoryContextAsync(Expression<Func<ChatDocument, bool>> predicate)
         {
             var chatHistories = await FindAllAsync(predicate);
-            if (chatHistories == null || chatHistories.Count <= 0)
+            if (chatHistories is not { Count: > 0 })
                 return null;
             var historyContext = new HistoryContext();
 
@@ -130,14 +130,18 @@ namespace ChatSessionManager
         }
 
         /// <summary>
-        /// Get History Context 
+        /// Get History Context
         /// </summary>
+        /// <param name="query"></param>
+        /// <param name="queryEmbeddings"></param>
+        /// <param name="size"></param>
         /// <param name="userId"></param>
+        /// <param name="rerankerScoreThreshold"></param>
         /// <returns></returns>
-        public async override Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5)
+        public override async Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5)
         {
             var chatHistories = await GetDocumentsByQueryAsync(query, queryEmbeddings, size, userId, rerankerScoreThreshold);
-            if (chatHistories == null || chatHistories.Count <= 0)
+            if (chatHistories is not { Count: > 0 })
                 return null;
             var historyContext = new HistoryContext();
             foreach (var chatHistory in chatHistories)
@@ -185,7 +189,7 @@ namespace ChatSessionManager
         /// </summary>
         /// <param name="chatDocument"></param>
         /// <returns></returns>
-        public async override Task<(List<LogMessage> messages, bool success)> AddDocumentAsync(ChatDocument chatDocument)
+        public override async Task<(List<LogMessage> messages, bool success)> AddDocumentAsync(ChatDocument chatDocument)
         {
             bool success = false;
             List<LogMessage> messages = [];
@@ -251,7 +255,7 @@ namespace ChatSessionManager
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async override Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId)
+        public override async Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId)
         {
             List<ChatDocument> chatDocuments = [];
             AzureKeyCredential _credential = new(_settings.ApiKey);
@@ -287,18 +291,52 @@ namespace ChatSessionManager
             }
             return null;
         }
+        public override async Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId,string sessionId)
+        {
+            List<ChatDocument> chatDocuments = [];
+            AzureKeyCredential _credential = new(_settings.ApiKey);
+            SearchIndexClient _searchIndexClient = new(_settings.SearchUrl, _credential);
+            SearchClient searchClient = _searchIndexClient.GetSearchClient(_settings.IndexName);
+            SearchOptions options = new()
+            {
+                Filter = $"userId eq '{userId}' and sessionId eq '{sessionId}'",
+                SearchMode = SearchMode.All,
+                QueryType = SearchQueryType.Full
+            };
+            try
+            {
 
+                Response<SearchResults<ChatDocument>> response = await searchClient.SearchAsync<ChatDocument>("*", options);
+                if (response.GetRawResponse().Status == (int)HttpStatusCode.OK)
+                {
+                    foreach (SearchResult<ChatDocument> result in response.Value.GetResults())
+                    {
+                        chatDocuments.Add(result.Document);
+                    }
+                    return chatDocuments;
+                }
+
+            }
+            catch (RequestFailedException ex)
+            {
+                _logger.LogError(ex, "Error occurred while searching");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while searching");
+            }
+            return null;
+        }
         /// <summary>
         /// Get Chat Documents by Query, Hybrid Search using Vector and Semantic Search
         /// </summary>
         /// <param name="query"></param>
         /// <param name="queryEmbeddings"></param>
         /// <param name="size"></param>
-        /// <param name="userId"></param>
-        /// <param name="similarityThreshold"></param>
+        /// <param name="userId"></param> 
         /// <param name="rerankerScoreThreshold"></param>
         /// <returns></returns>
-        public async override Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5)
+        public override async Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 3.5)
         {
             var chatDocuments = new List<ChatDocument>();
             try
@@ -307,54 +345,58 @@ namespace ChatSessionManager
                 SearchIndexClient _searchIndexClient = new(_settings.SearchUrl, _credential);
                 SearchClient searchClient = _searchIndexClient.GetSearchClient(_settings.IndexName);
 
-                var options = new SearchOptions
+                if (queryEmbeddings != null)
                 {
-                    VectorSearch = new()
+                    var options = new SearchOptions
                     {
-                        Queries = {
-                    new VectorizedQuery(queryEmbeddings.Value.ToArray())
-                    {
-                        KNearestNeighborsCount = 50,
-                        Fields = { nameof(ChatDocument.QuestionVector).Camelize() }
-                    }
-                }
-                    },
-                    SemanticSearch = new SemanticSearchOptions()
-                    {
-                        SemanticConfigurationName = _settings.SemanticSearchConfigName,
-                        QueryCaption = new(QueryCaptionType.Extractive),
-                        QueryAnswer = new(QueryAnswerType.Extractive),
-                    },
-                    QueryType = SearchQueryType.Semantic, // Tells the Azure Cognitive Search to use Semantic Ranking 
-                    Size = size,
-                    Select = { "*" }
-                };
-
-                try
-                {
-                    Response<SearchResults<ChatDocument>> response = await searchClient.SearchAsync<ChatDocument>(query, options);
-
-                    if (response.GetRawResponse().Status == (int)HttpStatusCode.OK)
-                    {
-                        foreach (SearchResult<ChatDocument> result in response.Value.GetResults())
+                        VectorSearch = new()
                         {
-                            if (result?.Document?.UserId == userId
-                                && result?.SemanticSearch.RerankerScore >= rerankerScoreThreshold)
-                            {
-                                chatDocuments.Add(result.Document);
+                            Queries = {
+                                new VectorizedQuery(queryEmbeddings.Value.ToArray())
+                                {
+                                    KNearestNeighborsCount = 50,
+                                    Fields = { nameof(ChatDocument.QuestionVector).Camelize() }
+                                }
                             }
+                        },
+                        SemanticSearch = new SemanticSearchOptions()
+                        {
+                            SemanticConfigurationName = _settings.SemanticSearchConfigName,
+                            QueryCaption = new(QueryCaptionType.Extractive),
+                            QueryAnswer = new(QueryAnswerType.Extractive),
+                        },
+                        QueryType = SearchQueryType.Semantic, // Tells the Azure Cognitive Search to use Semantic Ranking 
+                        Size = size,
+                        Select = { "*" }
+                    };
+
+                    try
+                    {
+                        Response<SearchResults<ChatDocument>> response = await searchClient.SearchAsync<ChatDocument>(query, options);
+
+                        if (response.GetRawResponse().Status == (int)HttpStatusCode.OK)
+                        {
+                            foreach (SearchResult<ChatDocument> result in response.Value.GetResults())
+                            {
+                                if (result?.Document?.UserId == userId
+                                    && result?.SemanticSearch.RerankerScore >= rerankerScoreThreshold)
+                                {
+                                    chatDocuments.Add(result.Document);
+                                }
+                            }
+                            return chatDocuments;
                         }
-                        return chatDocuments;
+                    }
+                    catch (RequestFailedException ex)
+                    {
+                        _logger.LogError(ex, "Error occurred while searching");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error occurred while searching");
                     }
                 }
-                catch (RequestFailedException ex)
-                {
-                    _logger.LogError(ex, "Error occurred while searching");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error occurred while searching");
-                }
+
                 return null;
             }
             catch (NullReferenceException)

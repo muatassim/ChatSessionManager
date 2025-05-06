@@ -7,67 +7,65 @@ namespace ChatSessionManager.Models
 
     public class ChatDocument
     {
-        [JsonPropertyName("id")]
         /// <summary>
-        /// Id of the document
+        /// id
         /// </summary>
+        [JsonPropertyName("id")]
+         
         public string Id { get; set; }
 
-
-        [JsonPropertyName("userId")]
         /// <summary>
-        /// User Id
+        /// User Id 
         /// </summary>
+        [JsonPropertyName("userId")] 
         public string UserId { get; set; }
 
-        [JsonPropertyName("content")]
+
         /// <summary>
-        /// Content
+        /// content 
         /// </summary>
+        [JsonPropertyName("content")] 
 
         public string Content { get; set; }
 
-        [JsonPropertyName("ipAddress")]
         /// <summary>
-        /// IpAddress 
+        /// ip address 
         /// </summary>
+        [JsonPropertyName("ipAddress")] 
         public string IpAddress { get; set; }
 
 
-        [JsonPropertyName("sessionId")]
         /// <summary>
-        /// GEt 
+        /// sessionId
         /// </summary>
+        [JsonPropertyName("sessionId")] 
         public string SessionId { get; set; }
 
 
-        [JsonPropertyName("timestamp")]
         /// <summary>
-        /// Created At
+        /// timestamp
         /// </summary>
+        [JsonPropertyName("timestamp")] 
 
         public DateTime Timestamp { get; set; }
 
-        [JsonPropertyName("role")]
         /// <summary>
-        /// Role of the message 
+        /// role 
         /// </summary>
+        [JsonPropertyName("role")] 
         public string Role { get; set; }
 
-
-        [JsonPropertyName("questionVector")]
-
         /// <summary>
-        /// Question Vector
+        /// questionVector
         /// </summary>
-
+        [JsonPropertyName("questionVector")] 
         public ReadOnlyMemory<float> QuestionVector { get; set; }
 
-
-        [JsonPropertyName("question")]
         /// <summary>
         /// Question 
         /// </summary>
+
+        [JsonPropertyName("question")] 
 
         public string Question { get; set; }
 
@@ -75,7 +73,10 @@ namespace ChatSessionManager.Models
         {
             return $"Id: {Id}, UserId: {UserId}, Content: {Content}, CreatedAt: {Timestamp}";
         }
-
+        /// <summary>
+        /// Validate
+        /// </summary>
+        /// <returns></returns>
         public (bool IsValid, string message) Validate()
         {
             var IsValid = true;
