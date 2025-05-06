@@ -6,13 +6,10 @@ using System.Linq.Expressions;
 
 namespace ChatSessionManager.Helpers
 {
-    public abstract class ChatHistoryDataService : IChatHistoryDataService
+    public abstract class ChatHistoryDataService(ILogger<ChatHistoryDataService> logger) : IChatHistoryDataService
     {
-        protected ILogger<ChatHistoryDataService> Logger { get; }
-        public ChatHistoryDataService(ILogger<ChatHistoryDataService> logger)
-        {
-            Logger = logger;
-        }
+        protected ILogger<ChatHistoryDataService> Logger { get; } = logger;
+
         /// <summary>
         /// Print to Log
         /// </summary>
@@ -95,6 +92,13 @@ namespace ChatSessionManager.Helpers
         /// <param name="userId"></param>
         /// <returns></returns>
         public abstract Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId);
+        /// <summary>
+        /// Get by UserId and SessionId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        public abstract Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId);
 
         /// <summary>
         /// Get

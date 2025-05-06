@@ -4,12 +4,7 @@ namespace ChatSessionManager.Models
 {
     public class HistoryContext
     {
-        public List<ChatDocument> ChatHistories { get; set; }
-
-        public HistoryContext()
-        {
-            ChatHistories = [];
-        }
+        public List<ChatDocument> ChatHistories { get; set; } = [];
 
         public void AddHistory(ChatDocument chatHistory)
         {
