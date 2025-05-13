@@ -4,15 +4,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description> ChatHistoryManager is a robust and highly scalable solution designed to streamline the storage and retrieval of chat history in AI-driven applications. It offers a structured approach to managing conversational data, ensuring both efficiency and security.</Description>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
     <PackageReleaseNotes>Added new methods to bring results by UserId, SessionId </PackageReleaseNotes>
     <Authors>Muatassim Aziz</Authors>
     <Company>DevelopmentHelpers</Company>
     <Copyright>Development Helpers 2017-2025 </Copyright>
     <RepositoryUrl>https://github.com/muatassim/ChatSessionManager</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.9</AssemblyVersion>
-    <FileVersion>1.0.0.9</FileVersion>
+    <AssemblyVersion>1.0.0.10</AssemblyVersion>
+    <FileVersion>1.0.0.10</FileVersion>
     <Title>ChatSessionManager</Title>
     <IncludeContentInPack>true</IncludeContentInPack>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile> 
@@ -28,13 +28,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Humanizer" Version="2.14.1" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.49.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.50.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
     <PackageReference Include="Azure.Search.Documents" Version="11.6.0" />
   </ItemGroup>
   <ItemGroup>
