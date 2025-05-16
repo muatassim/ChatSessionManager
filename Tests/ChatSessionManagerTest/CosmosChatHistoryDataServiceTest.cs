@@ -9,6 +9,8 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Embeddings;
 using System.Linq.Expressions;
+using Microsoft.Extensions.AI;
+
 namespace ChatSessionManagerTest
 {
     [TestClass]
@@ -29,7 +31,7 @@ namespace ChatSessionManagerTest
             Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
             Assert.IsNotNull(kernel);
 
-            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+           var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             Assert.IsNotNull(textEmbeddingGenerationService);
 
             var sampleQuestions = new List<string>
@@ -41,7 +43,7 @@ namespace ChatSessionManagerTest
 
             foreach (var question in sampleQuestions)
             {
-                ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+               var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
                 Assert.IsNotNull(questionEmbedding);
 
                 ChatDocument chatDocument = new()
@@ -52,7 +54,7 @@ namespace ChatSessionManagerTest
                     IpAddress = "127.0.0.1",
                     SessionId = sessionId,
                     Timestamp = DateTime.UtcNow,
-                    QuestionVector = questionEmbedding,
+                    QuestionVector = questionEmbedding.Vector,
                     Question = question,
                     Role = AuthorRole.User.Label
                 };
@@ -106,10 +108,10 @@ namespace ChatSessionManagerTest
             Assert.IsNotNull(chatHistoryDataService);
             Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
             Assert.IsNotNull(kernel);
-            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+           var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             Assert.IsNotNull(textEmbeddingGenerationService);
             //Get Question 1 Vector 
-            ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+            var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
             Assert.IsNotNull(questionEmbedding);
 
             ChatDocument chatDocument = new()
@@ -121,7 +123,7 @@ namespace ChatSessionManagerTest
                 SessionId = sessionId,
                 Timestamp = DateTime.UtcNow,
                 Role = "user",
-                QuestionVector = questionEmbedding,
+                QuestionVector = questionEmbedding.Vector,
                 Question = question
             };
 
@@ -140,12 +142,12 @@ namespace ChatSessionManagerTest
             Kernel kernel = AppHost.GetServiceProvider().GetService<Kernel>();
 
             Assert.IsNotNull(kernel);
-            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+           var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             Assert.IsNotNull(textEmbeddingGenerationService);
             //Get Question 1 Vector 
-            ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+            var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
             Assert.IsNotNull(questionEmbedding);
-            List<ChatDocument> historyRecords = await chatHistoryDataService.GetDocumentsByQueryAsync(question, questionEmbedding, size, userId);
+            List<ChatDocument> historyRecords = await chatHistoryDataService.GetDocumentsByQueryAsync(question, questionEmbedding.Vector, size, userId);
             Assert.IsNotNull(historyRecords);
         }
 
@@ -255,22 +257,22 @@ namespace ChatSessionManagerTest
 
             IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
             Assert.IsNotNull(chatCompletionService);
-            ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+           var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             Assert.IsNotNull(textEmbeddingGenerationService);
             //Get Question 1 Vector 
-            ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+            var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
             Assert.IsNotNull(questionEmbedding);
 
-            await AskQuestion(question, chatHistoryDataService, chatCompletionService, questionEmbedding);
+            await AskQuestion(question, chatHistoryDataService, chatCompletionService, questionEmbedding.Vector);
 
 
             //Second Question Vector 
-            ReadOnlyMemory<float> followUpQuestionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(followUpQuestion);
+            var followUpQuestionEmbedding = await textEmbeddingGenerationService.GenerateAsync(followUpQuestion);
             Assert.IsNotNull(followUpQuestionEmbedding);
 
 
             //Start next Question 
-            await AskQuestion(followUpQuestion, chatHistoryDataService, chatCompletionService, followUpQuestionEmbedding);
+            await AskQuestion(followUpQuestion, chatHistoryDataService, chatCompletionService, followUpQuestionEmbedding.Vector);
             //Get History Records 
 
 
@@ -314,8 +316,8 @@ namespace ChatSessionManagerTest
             };
             chatHistory.Add(messageContent);
             //Save the conversation to the UserStore 
-            (List<LogMessage> messages, bool success) response = await chatHistoryDataService.AddDocumentAsync(chatDocument);
-            Assert.IsNotNull(response);
+            var (_, success) = await chatHistoryDataService.AddDocumentAsync(chatDocument);
+            Assert.IsTrue(success);
         }
 
 

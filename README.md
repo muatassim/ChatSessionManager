@@ -104,10 +104,10 @@ public async Task ChatWithHistoryExampleAsync_Test(string question, string follo
 
     IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
     Assert.IsNotNull(chatCompletionService); 
-    ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+   var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
     Assert.IsNotNull(textEmbeddingGenerationService);
     //Get Question 1 Vector 
-    ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+    var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
     Assert.IsNotNull(questionEmbedding);
 
     await AskQuestion(question, chatHistoryDataService, chatCompletionService,questionEmbedding);

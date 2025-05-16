@@ -104,10 +104,10 @@ public async Task ChatWithHistoryExampleAsync_Test(string question, string follo
 
     IChatCompletionService chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
     Assert.IsNotNull(chatCompletionService); 
-    ITextEmbeddingGenerationService textEmbeddingGenerationService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();
+   var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
     Assert.IsNotNull(textEmbeddingGenerationService);
     //Get Question 1 Vector 
-    ReadOnlyMemory<float> questionEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(question);
+    var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
     Assert.IsNotNull(questionEmbedding);
 
     await AskQuestion(question, chatHistoryDataService, chatCompletionService,questionEmbedding);
@@ -326,6 +326,38 @@ foreach (var doc in chatDocuments)
 
 
 ```
+### DeleteDocumentAsync
+Delete documents by Id
+## Method Signature
+```csharp
+Task<bool> DeleteDocumentAsync(string id);
 
+```
+
+Example:
+```csharp
+ 
+bool deleted = await chatHistoryDataService.DeleteDocumentAsync("document-id");
+if (deleted) Console.WriteLine("Document deleted successfully");
+
+
+```
+
+
+```
+### DeleteDocumentByUserIdAndSessionIdAsync
+Delete documents by userid and sessionId
+## Method Signature
+```csharp
+Task<bool> DeleteDocumentByUserIdAndSessionIdAsync(string userId, string sessionId);
+
+```
+
+Example:
+```csharp
+bool deleted = await chatHistoryDataService.DeleteDocumentByUserIdAndSessionIdAsync("user123", "session456");
+if (deleted) Console.WriteLine("All documents for user and session deleted successfully");
+
+```
 
 
