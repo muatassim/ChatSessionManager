@@ -4,15 +4,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description> ChatHistoryManager is a robust and highly scalable solution designed to streamline the storage and retrieval of chat history in AI-driven applications. It offers a structured approach to managing conversational data, ensuring both efficiency and security.</Description>
-    <Version>1.0.10</Version>
-    <PackageReleaseNotes>Added new methods to bring results by UserId, SessionId </PackageReleaseNotes>
+    <Version>1.0.12</Version>
+    <PackageReleaseNotes>Upgraded nuget packages</PackageReleaseNotes>
     <Authors>Muatassim Aziz</Authors>
     <Company>DevelopmentHelpers</Company>
     <Copyright>Development Helpers 2017-2025 </Copyright>
     <RepositoryUrl>https://github.com/muatassim/ChatSessionManager</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.10</AssemblyVersion>
-    <FileVersion>1.0.0.10</FileVersion>
+    <AssemblyVersion>1.0.0.12</AssemblyVersion>
+    <FileVersion>1.0.0.12</FileVersion>
     <Title>ChatSessionManager</Title>
     <IncludeContentInPack>true</IncludeContentInPack>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile> 

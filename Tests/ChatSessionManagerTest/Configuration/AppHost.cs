@@ -1,4 +1,6 @@
-﻿using ChatSessionManager;
+﻿using System.ClientModel;
+using Azure.AI.OpenAI;
+using ChatSessionManager;
 using ChatSessionManagerTest.Configuration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,14 +53,11 @@ namespace ChatSessionManagerTest.Configuration
                              endpoint: azureOpenAIOptions.Endpoint,
                               apiKey: azureOpenAIOptions.Key);
 
-                    services.AddAzureOpenAITextEmbeddingGeneration(
+                    services.AddAzureOpenAIEmbeddingGenerator(
                         deploymentName: azureOpenAIOptions.EmbeddingModel,
-                            endpoint: azureOpenAIOptions.Endpoint,
-                             apiKey: azureOpenAIOptions.Key);
-                    services.AddTransient((serviceProvider) =>
-                    {
-                        return new Kernel(serviceProvider);
-                    });
+                        new AzureOpenAIClient(new Uri(azureOpenAIOptions.Endpoint),
+                            new ApiKeyCredential(azureOpenAIOptions.Key))); 
+                    services.AddTransient((serviceProvider) => new Kernel(serviceProvider));
                     services.AddAzureAISearchChatHistory(context.Configuration);
                     services.AddCosmosChatHistory(context.Configuration);
                 });

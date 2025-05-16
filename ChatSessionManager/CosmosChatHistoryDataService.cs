@@ -19,7 +19,7 @@ namespace ChatSessionManager
         private readonly ILogger<CosmosChatHistoryDataService> _logger;
         readonly CosmosSearch _settings;
         private readonly CosmosClient _cosmosClient;
-        private readonly CosmosSerializationOptions _cosmosSerializeOptions;
+
         public CosmosChatHistoryDataService(IOptions<ChatSessionManagerOptions> options, ILogger<CosmosChatHistoryDataService> logger) : base(logger)
         {
             ArgumentNullException.ThrowIfNull(options);
@@ -30,12 +30,12 @@ namespace ChatSessionManager
             var (IsValid, message) = _settings.Validate();
             if (!IsValid)
                 throw new ArgumentException(message);
-            _cosmosSerializeOptions = new()
+            CosmosSerializationOptions cosmosSerializeOptions = new()
             {
                 PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
             };
             _cosmosClient = new CosmosClientBuilder(_settings.AccountEndpoint, _settings.AccountKey)
-                .WithSerializerOptions(_cosmosSerializeOptions).Build();
+                .WithSerializerOptions(cosmosSerializeOptions).Build();
 
         }
         /// <summary>
@@ -184,6 +184,115 @@ namespace ChatSessionManager
             return historyContext;
         }
 
+        public override async Task<bool> DeleteDocumentAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return false;
+
+            try
+            {
+                (Container container, List<LogMessage> messages, bool success) = await GetContainerAsync();
+                if (container == null)
+                    return false;
+
+                // Find the document to get the partition key (userId)
+                var document = await FindAsync(d => d.Id == id);
+                if (document == null || string.IsNullOrWhiteSpace(document.UserId))
+                    return false;
+
+                var response = await container.DeleteItemAsync<ChatDocument>(id, new PartitionKey(document.UserId));
+                return response.StatusCode == System.Net.HttpStatusCode.NoContent || response.StatusCode == System.Net.HttpStatusCode.OK;
+            }
+            catch (CosmosException ex)
+            {
+                _logger.LogError(ex, $"Error deleting document with id: {id}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error deleting document with id: {id}");
+                return false;
+            }
+        }
+
+        public override async Task<bool> DeleteDocumentByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return false;
+
+            try
+            {
+                (Container container, List<LogMessage> messages, bool success) = await GetContainerAsync();
+                if (container == null)
+                    return false;
+
+                var documents = await GetDocumentsByUserIdAsync(userId);
+                if (documents == null || documents.Count == 0)
+                    return true; // Nothing to delete
+
+                bool allDeleted = true;
+                foreach (var doc in documents)
+                {
+                    try
+                    {
+                        var response = await container.DeleteItemAsync<ChatDocument>(doc.Id, new PartitionKey(userId));
+                        if (response.StatusCode != System.Net.HttpStatusCode.NoContent && response.StatusCode != System.Net.HttpStatusCode.OK)
+                            allDeleted = false;
+                    }
+                    catch (CosmosException ex)
+                    {
+                        _logger.LogError(ex, $"Error deleting document with id: {doc.Id} for userId: {userId}");
+                        allDeleted = false;
+                    }
+                }
+                return allDeleted;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error deleting documents for userId: {userId}");
+                return false;
+            }
+        }
+
+        public override async Task<bool> DeleteDocumentByUserIdAndSessionIdAsync(string userId, string sessionId)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(sessionId))
+                return false;
+
+            try
+            {
+                (Container container, List<LogMessage> messages, bool success) = await GetContainerAsync();
+                if (container == null)
+                    return false;
+
+                var documents = await GetDocumentsByUserIdAndSessionIdAsync(userId, sessionId);
+                if (documents == null || documents.Count == 0)
+                    return true; // Nothing to delete
+
+                bool allDeleted = true;
+                foreach (var doc in documents)
+                {
+                    try
+                    {
+                        var response = await container.DeleteItemAsync<ChatDocument>(doc.Id, new PartitionKey(userId));
+                        if (response.StatusCode != System.Net.HttpStatusCode.NoContent && response.StatusCode != System.Net.HttpStatusCode.OK)
+                            allDeleted = false;
+                    }
+                    catch (CosmosException ex)
+                    {
+                        _logger.LogError(ex, $"Error deleting document with id: {doc.Id} for userId: {userId} and sessionId: {sessionId}");
+                        allDeleted = false;
+                    }
+                }
+                return allDeleted;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error deleting documents for userId: {userId} and sessionId: {sessionId}");
+                return false;
+            }
+        }
+
         public override async Task<List<ChatDocument>> GetDocumentsByQueryAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold = 0.1)
         {
             (Container container, List<LogMessage> logMessages, bool success) = await GetContainerAsync();
@@ -257,7 +366,7 @@ namespace ChatSessionManager
             return null;
         }
 
-        public override async Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId)
+        public override async Task<List<ChatDocument>> GetDocumentsByUserIdAndSessionIdAsync(string userId, string sessionId)
         {
             (Container container, List<LogMessage> logMessages, bool success) = await GetContainerAsync();
 
@@ -398,15 +507,14 @@ namespace ChatSessionManager
         /// </summary>
         /// <returns></returns>
         public async Task<(List<LogMessage> messages, bool success)> CreateDataSourceAsync()
-        {
-            bool success = true;
+        { 
             List<LogMessage> messages = [];
             DatabaseResponse databaseResponse = await _cosmosClient.CreateDatabaseIfNotExistsAsync(_settings.DatabaseId);
             if (databaseResponse.StatusCode != System.Net.HttpStatusCode.Created && databaseResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId} does not exist. Status code: {databaseResponse.StatusCode}", MessageType.Info));
-                success = false;
-                return (messages, success);
+             
+                return (messages, false);
             }
             else
             {
@@ -449,18 +557,21 @@ namespace ChatSessionManager
             if (containerResponse.StatusCode != System.Net.HttpStatusCode.Created && containerResponse.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId}, Container:{_settings.ContainerId} does not exist . Status code: {containerResponse.StatusCode}", MessageType.Error));
-                success = false;
-                return (messages, success);
+               return (messages, false);
             }
             messages.Add(new LogMessage($"Cosmos Database with Id:{_settings.DatabaseId}, Container:{_settings.ContainerId}  creation Successfull", MessageType.Info));
 
-            return (messages, success);
+            return (messages, true);
         }
 
         private async Task<(Container container, List<LogMessage> messages, bool success)> GetContainerAsync()
-        {
-            bool success = true;
+        { 
             List<LogMessage> messages = [];
+            if (_cosmosClient == null)
+            {
+                messages.Add(new LogMessage($"Cosmos Client is not initialized", MessageType.Error));
+                return (null, messages, false);
+            } 
             Database _database = await _cosmosClient?.GetDatabase(_settings.DatabaseId).ReadAsync();
             if (_database == null)
             {
@@ -474,7 +585,7 @@ namespace ChatSessionManager
                 return (null, messages, false);
             }
 
-            return (_container, messages, success);
+            return (_container, messages, true);
         }
     }
 

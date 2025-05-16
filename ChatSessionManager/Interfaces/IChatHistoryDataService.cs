@@ -93,7 +93,30 @@ namespace ChatSessionManager.Interfaces
         /// <param name="userId"></param>
         /// <param name="sessionId"></param>
         /// <returns></returns>
-        Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId);
+        Task<List<ChatDocument>> GetDocumentsByUserIdAndSessionIdAsync(string userId, string sessionId);
+
+
+        /// <summary>
+        /// Delete Document by UserId and SessionId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        Task<bool> DeleteDocumentByUserIdAndSessionIdAsync(string userId, string sessionId);
+
+        /// <summary>
+        /// Delete Document by UserId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<bool> DeleteDocumentByUserIdAsync(string userId);
+
+        /// <summary>
+        /// Delete Document by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<bool> DeleteDocumentAsync(string id);
 
     }
 }

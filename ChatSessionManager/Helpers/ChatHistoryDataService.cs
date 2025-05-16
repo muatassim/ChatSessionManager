@@ -62,7 +62,10 @@ namespace ChatSessionManager.Helpers
         /// </summary>
         /// <returns></returns>
         public abstract Task<bool> DataSourceExistsAsync();
-
+        /// <summary>
+        /// Delete DataSource If Exists
+        /// </summary>
+        /// <returns></returns>
         public abstract Task<(List<LogMessage> messages, bool success)> DeleteIfDataSourceExistsAsync();
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace ChatSessionManager.Helpers
         /// <param name="userId"></param>
         /// <param name="sessionId"></param>
         /// <returns></returns>
-        public abstract Task<List<ChatDocument>> GetDocumentsByUserIdAsync(string userId, string sessionId);
+        public abstract Task<List<ChatDocument>> GetDocumentsByUserIdAndSessionIdAsync(string userId, string sessionId);
 
         /// <summary>
         /// Get
@@ -120,30 +123,26 @@ namespace ChatSessionManager.Helpers
         public abstract Task<HistoryContext> GetChatHistoryContextAsync(string query, ReadOnlyMemory<float>? queryEmbeddings, int size, string userId, double rerankerScoreThreshold);
 
 
+        
         /// <summary>
-        /// Cosine Similarity
+        /// 
         /// </summary>
-        /// <param name="vectorA"></param>
-        /// <param name="vectorB"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        protected double CosineSimilarity(float[] vectorA, float[] vectorB)
-        {
-            double dotProduct = 0;
-            double magnitudeA = 0;
-            double magnitudeB = 0;
-
-            for (int i = 0; i < vectorA.Length; i++)
-            {
-                dotProduct += vectorA[i] * vectorB[i];
-                magnitudeA += Math.Pow(vectorA[i], 2);
-                magnitudeB += Math.Pow(vectorB[i], 2);
-            }
-
-            if (magnitudeA == 0 || magnitudeB == 0)
-                return 0;
-
-            return dotProduct / (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB));
-        }
+        public abstract Task<bool> DeleteDocumentAsync(string id);
+        /// <summary>
+        /// Delete Document by UserId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public abstract Task<bool> DeleteDocumentByUserIdAsync(string userId);
+        /// <summary>
+        /// Delete Document by UserId and SessionId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        public abstract Task<bool> DeleteDocumentByUserIdAndSessionIdAsync(string userId, string sessionId);
 
     }
 
