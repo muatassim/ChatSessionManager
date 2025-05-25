@@ -400,7 +400,7 @@ namespace ChatSessionManagerTest
             var textEmbeddingGenerationService = kernel.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
             Assert.IsNotNull(textEmbeddingGenerationService);
             //Get Question 1 Vector 
-            var questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
+            Embedding<float> questionEmbedding = await textEmbeddingGenerationService.GenerateAsync(question);
             Assert.IsNotNull(questionEmbedding);
 
             string id = Guid.NewGuid().ToString();
