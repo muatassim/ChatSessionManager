@@ -5,8 +5,11 @@
     <NoWarn>$(NoWarn);SKEXP0010;SKEXP0001</NoWarn>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <UserSecretsId>d1e7d11a-cd7d-45a0-a7e7-8a95d8abde89</UserSecretsId>
+    <UserSecretsId>d1e7d11a-cd7d-45a0-a7e7-8a95d8abde89</UserSecretsId> 
   </PropertyGroup>
+	<PropertyGroup>
+		<AzureCosmosDisableNewtonsoftJsonCheck>true</AzureCosmosDisableNewtonsoftJsonCheck>
+	</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
